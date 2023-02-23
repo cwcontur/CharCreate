@@ -120,11 +120,19 @@ class App(customtkinter.CTk):
         
         # ! Frame for definition management buttons above scrollable frame and character counter
         self.definition_frame_buttons = customtkinter.CTkFrame(self.creation_frame, fg_color="transparent")
-        self.definition_frame_buttons.grid(row=1, column=0, columnspan=2, pady=10, stick="ne")
+        self.definition_frame_buttons.grid(row=1, column=0, columnspan=2, padx=20, pady=10, stick="nw")
+        self.definition_frame_buttons.grid_columnconfigure(0, weight=0)
         
         # * Button to create a new definition
         self.add_button = customtkinter.CTkButton(self.definition_frame_buttons, width=120, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Definition", image=self.plus_icon, command=self.add_definition) 
-        self.add_button.grid(row=1, column=1, padx=20, pady=5, sticky="ne")
+        self.add_button.grid(row=0, column=0, pady=5, sticky="e")
+        
+        # * Button to select definitions
+        self.select_button = customtkinter.CTkButton(self.definition_frame_buttons, width=120, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Select", command=self.select_definitions)
+        self.select_button.grid(row=0, column=1, padx=10, pady=5, sticky="w")
+        
+        # * Button to delete definitions
+        self.delete_def_butt = customtkinter.CTkButton(self.definition_frame_buttons, width=120, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Delete", command=self.add_definition)
         
         # * Segmented button to change between the different pieces of the character creation process
         self.character_aspects_var = customtkinter.StringVar(value="Definitions") # Variable to set the default segmented button selection
@@ -173,11 +181,21 @@ class App(customtkinter.CTk):
         self.variable = tk.IntVar()      
         # ! ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
           
-    # ? Adding definitions
-    # ? ===================================
+        # ! Adding definitions
+        # ! ===================================
         self.my_definitions = []
         self.frame_definitions = []
-        self.button_definitions = []   
+        self.button_definitions = []  
+        # ! ===================================
+       
+    def select_definitions(self):
+        print()
+        count = len(self.my_definitions)
+        for x in range(count):
+            self.my_definitions[x].grid(row=x, column=0, padx=(7,1), pady=7, sticky="nwes")    
+            self.button_definitions[x].grid_configure(padx=(1,7))
+          
+   
         
     def check_curr_def(self):
         print(self.selected_def)
@@ -191,6 +209,12 @@ class App(customtkinter.CTk):
     def add_definition(self):
         
         count = len(self.my_definitions)
+        
+        if count != 0:
+            for x in range(count):
+                self.my_definitions[x].grid_forget()
+                self.button_definitions[x].grid_configure(padx=7)
+        
         print(count)
         # self.co = count
         def_num = str(count)
@@ -210,7 +234,7 @@ class App(customtkinter.CTk):
         self.frame_definitions[count].columnconfigure(1, weight=1)
         self.frame_definitions[count].columnconfigure(0, weight=0)
         
-        # self.my_definitions[count] = customtkinter.CTkCheckBox(master=self.frame_definitions[count], width=1, height=1, text="", command=lambda widget=self.my_definitions[count]: self.check_b(widget))
+        self.my_definitions[count] = customtkinter.CTkCheckBox(master=self.frame_definitions[count], width=1, height=1, text="", command=lambda widget=self.my_definitions[count]: self.check_b(widget))
         # self.my_definitions[count].grid(row=count, column=0, padx=(5,2.5), pady=5, sticky="news")
         
         # self.var=tk.StringVar(self)
@@ -224,7 +248,7 @@ class App(customtkinter.CTk):
         # self.my_definitions[count].grid(row=count, column=0, padx=(7,1), pady=7, sticky="news")
         
         self.button_definitions[count] = customtkinter.CTkButton(master=self.frame_definitions[count], height=35, corner_radius=10, text="This is a story all about how my life got flip turned upside down and I had a little", fg_color="gray95", command=lambda widget=self.button_definitions[count]: self.check_b(widget))
-        self.button_definitions[count].grid(row=count, column=1, padx=(7,7), pady=7, sticky="news")
+        self.button_definitions[count].grid(row=count, column=1, padx=7, pady=7, sticky="news")
         
         
     # def check_r(self):
