@@ -146,36 +146,45 @@
 
 # # text1 = "bitches"
 # # pc.copy(text1)
-import tkinter as tk
-from functools import partial
+# import tkinter as tk
+# from functools import partial
 
 
-def function(i):
-    print("You toggled number %i"%i)
-    print([var.get() for var in variables])
+# def function(i):
+#     print("You toggled number %i"%i)
+#     print([var.get() for var in variables])
 
 
-root = tk.Tk()
-variables = []
+# root = tk.Tk()
+# variables = []
 
 
 
 
-# Create the new variable
-variable = tk.IntVar()
-variables.append(variable)
+# # Create the new variable
+# variable = tk.IntVar()
+# variables.append(variable)
 
-# Create the command using partial
-command = partial(function, 0)
+# # Create the command using partial
+# command = partial(function, 0)
 
-# Create the radio button
-button = tk.Radiobutton(root, variable=variable, value=0, command=command)
-button.pack()
+# # Create the radio button
+# button = tk.Radiobutton(root, variable=variable, value=0, command=command)
+# button.pack()
 
-command1 = partial(function, 1)
+# command1 = partial(function, 1)
 
-# Create the radio button
-button1 = tk.Radiobutton(root, variable=variable, value=1, command=command)
-button1.pack()
+# # Create the radio button
+# button1 = tk.Radiobutton(root, variable=variable, value=1, command=command)
+# button1.pack()
 
-root.mainloop() 
+# root.mainloop() 
+
+from colour import Color
+
+red = Color("#E04421")
+yellow = Color("#ebd338")
+green = Color("#91eb38")
+
+print(list(yellow.range_to(green,5)))
+

@@ -112,13 +112,23 @@ class App(customtkinter.CTk):
         self.creation_frame.grid_rowconfigure(3, weight=1)
         # ! ==================================================== 
         
-        # TODO: DEVELOP AND DEPLOY MULTIPROCESSING FOR GUI
-        self.char_def_counter = customtkinter.CTkLabel(self.creation_frame, height=1, text="Character Count: 0 / 3200", anchor="w")# ! THIS WILL REQUIRE MULTIPROCESSING
-        self.char_def_counter.grid(row=2, column=0, padx=20, pady=5, sticky="nsew")
+        self.count_frame = customtkinter.CTkFrame(self.creation_frame, fg_color="transparent")
+        self.count_frame.grid(row=2, column=0, columnspan=2, padx=20, pady=(5,7), sticky="nsew")
+        self.count_frame.grid_columnconfigure(0, weight=0)
+        self.count_frame.grid_columnconfigure(1, weight=1)
         
-        # TODO: Create new frame to properly space count label and progressbar together
-        self.char_count_progress = customtkinter.CTkProgressBar(self.creation_frame, corner_radius=10, width=1920)
-        self.char_count_progress.grid(row=2, column=1, padx=20, pady=5, sticky="news")
+        # * Number counter to keep track of the number of typed characters
+        self.char_def_counter = customtkinter.CTkLabel(self.count_frame, height=1, text="Character Count: 0 / 3200", anchor="w")# ! THIS WILL REQUIRE MULTIPROCESSING
+        self.char_def_counter.grid(row=2, column=0, padx=5, pady=0, sticky="nsew")
+        
+        # * Progressbar to visually show how many characters out of the total limit have been used
+        self.char_count_progress = customtkinter.CTkProgressBar(self.count_frame, corner_radius=10, width=1000, height=15, fg_color="white", progress_color="#91eb38")
+        self.char_count_progress.set(0) # Range from 0 to 1 for bar fill
+        self.char_count_progress.grid(row=2, column=1, padx=5, pady=0, sticky="nw")
+        
+        # ? Colors for the progress bar as it becomes full
+        self.bar_colors = ["#91eb38", "#adeb38", "#caeb38", "#e6eb38", "#ebd338", "#ebd338", "#e8b132", "#e68e2c", "#e36927", "#e04421"]
+        
         
         # ! Frame for definition management buttons above scrollable frame and character counter
         self.definition_frame_buttons = customtkinter.CTkFrame(self.creation_frame, fg_color="transparent")
@@ -126,7 +136,7 @@ class App(customtkinter.CTk):
         self.definition_frame_buttons.grid_columnconfigure(0, weight=0)
         
         # * Button to create a new definition
-        self.add_button = customtkinter.CTkButton(self.definition_frame_buttons, width=120, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Definition", image=self.plus_icon, command=self.dumb) 
+        self.add_button = customtkinter.CTkButton(self.definition_frame_buttons, width=140, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Definition", image=self.plus_icon, command=self.add_definition) 
         self.add_button.grid(row=0, column=0, pady=5, sticky="e")
         
         # * Button to select definitions
@@ -186,54 +196,52 @@ class App(customtkinter.CTk):
           
         # ! Adding definitions
         # ! ===================================
+        self.definition_name = []
         self.my_definitions = []
         self.frame_definitions = []
         self.button_definitions = []  
         # ! ===================================
-    
-    # TODO: Figure out how to remove definitions from stored lists in an elegant manner
+        self.butt_num = 0    
+        # * Tracks select button state to see if it has been pressed
+        self.select_state = False
+    # ? Allows deletion of definitions that are selected
+    # ? ================================================
     def delete_definition_selection(self):
-        print()
-        # count = len(self.selected_definitions)
+        self.removed_count = 0
         y = 0
-        # global temp_pos
-        # temp_pos = None
-
-        # for x in self.selected_definitions:
-        #     # global temp_pos
-        #     # temp_pos = None
-        #     print(x)
-        #     self.temp_pos = []
-        #     for g in self.my_definitions:
-        #         print(g)
-        #         if g == x:
-        #             self.temp_pos[0] = g
-        #             print(g)
-        #             break
-        #     # temp = self.selected_definitions[y]
-        #     # def_pos = [int(i) for i in temp.split() if i.isdigit()]
-        #     print(self.temp_pos[0])
-        #     self.frame_definitions[self.temp_pos[0]].grid_remove()
-        #     self.my_definitions.pop(self.temp_pos[0])
-        #     self.frame_definitions.pop(self.temp_pos[0])
-        #     self.button_definitions.pop(self.temp_pos[0])
-        #     y += 1
-            
+        # Iterates through all button names for defs
+        for x in self.definition_name:
+            # Makes sure that only selected definitions are removed  
+            if self.my_definitions[y].get() == 1:
+                self.frame_definitions[y].grid_remove()
+                self.removed_count += 1 # Keeps track of how many definitions were removed
+            y+=1 # List position tracker   
+        self.butt_num -= self.removed_count # Makes sure current count of the def buttons is correct
+    # ? ================================================
     # ? Allows selection of multiple definitions by showing checkboxes next to each definition
+    # ? Switches to cancel button that also makes all checkboxes disappear and delete button to be removed
     # ? ======================================================================================
     def select_definitions(self):
-        self.delete_def_butt.grid(row=0, column=2, pady=5, sticky="e")
-        
-        count = len(self.my_definitions)
-        for x in range(count):
-            self.my_definitions[x].grid(row=x, column=0, padx=(7,1), pady=7, sticky="nwes")    
-            self.button_definitions[x].grid_configure(padx=(1,7))
-
-    # ? ======================================================================================
-          
+        self.count = len(self.my_definitions)
+        # * Checks button state to see if it has been pressed
+        if self.select_state == True:
+            print(self.select_state)
+            self.delete_def_butt.grid_forget()
+            self.select_button.configure(text="Select")
+            self.select_state = False
+            for x in range(self.count):
+                self.my_definitions[x].grid_forget()
+                self.button_definitions[x].grid_configure(padx=7)
+        else:   
+            self.select_state = True
+            self.delete_def_butt.grid(row=0, column=2, pady=5, sticky="e")
+            self.select_button.configure(text="Cancel")
+            for x in range(self.count):
+                self.my_definitions[x].grid(row=x, column=0, padx=(7,1), pady=7, sticky="nwes")    
+                self.button_definitions[x].grid_configure(padx=(1,7))
+    # ? ======================================================================================       
     def check_curr_def(self):
-        print(self.selected_def)
-        
+        print(self.selected_def)    
     # ? Removes placeholder text from textbox
     # ? =====================================        
     def focus_test(self, val):
@@ -251,7 +259,7 @@ class App(customtkinter.CTk):
                 self.button_definitions[x].grid_configure(padx=7)
         
         # TODO: Change this so that the button name is not based on the length of the list of current buttons; this will prevent buttons from having the same name
-        def_num = str(count)
+        def_num = str(self.butt_num)
         def_name = "Definition"+def_num
         frame_name = "Frame"+def_num
         def_button_name = "Button"+def_num
@@ -265,31 +273,40 @@ class App(customtkinter.CTk):
         self.frame_definitions[count].columnconfigure(1, weight=1)
         self.frame_definitions[count].columnconfigure(0, weight=0)
         
-        self.my_definitions[count] = customtkinter.CTkCheckBox(master=self.frame_definitions[count], width=1, height=1, text="", command=lambda widget=self.my_definitions[count]: self.check_b(widget))
-        # self.my_definitions[count].grid(row=count, column=0, padx=(5,2.5), pady=5, sticky="news")
+        # TODO: checkbox command not being used, so it has been removed since only button state is important
+        # , command=lambda widget=self.my_definitions[count]: self.check_b(widget) 
+        self.my_definitions[count] = customtkinter.CTkCheckBox(master=self.frame_definitions[count], width=1, height=1, text="")
+        
         # * <<<< Unused radio buttons, keeping for when I need them again so I know the format >>>>
         # self.my_definitions[count] = customtkinter.CTkRadioButton(master=self.frame_definitions[count], border_color="gray95", radiobutton_width=35, radiobutton_height=35, border_width_unchecked=10, border_width_checked=10, width=1, height=1, text="", variable=self.variable, value=count, command=lambda widget=self.my_definitions[count]: self.check_b(widget))
         # self.my_definitions[count].grid(row=count, column=0, padx=(7,1), pady=7, sticky="news")
         
-        self.button_definitions[count] = customtkinter.CTkButton(master=self.frame_definitions[count], height=35, corner_radius=10, text="This is a story all about how my life got flip turned upside down and I had a little", fg_color="gray95", command=lambda widget=self.button_definitions[count]: self.check_b(widget))
+        # TODO: set proper color and fix text color to not be white
+        # TODO: set up command to modify text; currently button does nothing
+        # , command=lambda widget=self.button_definitions[count]: self.check_b(widget)
+        self.button_definitions[count] = customtkinter.CTkButton(master=self.frame_definitions[count], height=35, corner_radius=10, text=str(count), fg_color="black")
         self.button_definitions[count].grid(row=count, column=1, padx=7, pady=7, sticky="news")
-
-    # * Little tester for buttons   
-    def check_b(self, val):
         
+        # ! Allows me to keep track of the number of definitions present and also the proper name of the definitions
+        # ! ===================================================
+        self.definition_name.append(self.my_definitions[count])
+        self.butt_num += 1
+        # ! ===================================================
         
-        for x in len(self.my_definitions):
-            if self.button_definitions[x] == val:
-                temp = self.button_definitions[x].get()
-                if temp == 1:
-                    print(val, " button selected!")
-                elif temp == 0:
-                    print(val, " button deselected!")
-        # print(self.selected_def)
-        self.selected_definitions.append(val)
+    # # * Little tester for buttons   
+    # def check_b(self, val):
+    #     # for x in range(self.butt_num):
+    #     #     if self.button_definitions[x] == val:
+    #     #         temp = self.button_definitions[x].get()
+    #     #         if temp == 1:
+    #     #             print(val, " button selected!")
+    #     #         elif temp == 0:
+    #     #             print(val, " button deselected!")
+    #     # print(self.selected_def)
+    #     self.selected_definitions.append(val)
         
-        # self.selected_def=val
-        # print(val)
+    #     # self.selected_def=val
+    #     # print(val)
     # ? ===================================
 
     def seg_butt_test(self, value):
@@ -333,13 +350,37 @@ class App(customtkinter.CTk):
         self.creation_frame.grid(row=0, column=1, padx=20, pady=20)
     # ? ============================================================
 
-    # ? Button tester
+    # ? Progress bar tester/counter
     def dumb(self):
-        print("Dumb")
         for i in range(3200):
-            self.char_def_counter.configure(text=("Character Count: " + str(i) + " / 3200"))
-            # time.sleep(.1)
+            temp = i/3200 # Sets progress bar percentage
+            
+            # Sets progress bar color based on percentage
+            if temp == .1:
+                self.char_count_progress.configure(progress_color=self.bar_colors[0])
+            elif temp == .2:
+                self.char_count_progress.configure(progress_color=self.bar_colors[1])
+            elif temp == .3:
+                self.char_count_progress.configure(progress_color=self.bar_colors[2])
+            elif temp == .4:
+                self.char_count_progress.configure(progress_color=self.bar_colors[3])
+            elif temp == .5:
+                self.char_count_progress.configure(progress_color=self.bar_colors[4])
+            elif temp == .5:
+                self.char_count_progress.configure(progress_color=self.bar_colors[5])
+            elif temp == .6:
+                self.char_count_progress.configure(progress_color=self.bar_colors[6])
+            elif temp == .7:
+                self.char_count_progress.configure(progress_color=self.bar_colors[7])
+            elif temp == .8:
+                self.char_count_progress.configure(progress_color=self.bar_colors[8])
+            elif temp == .9:
+                self.char_count_progress.configure(progress_color=self.bar_colors[9])
+                
+            self.char_count_progress.set(temp) # Updates progress bar
+            self.char_def_counter.configure(text=("Character Count: " + str(i+1) + " / 3200")) # Updates label with total character number
             self.update()
+    
     # ! Functionality of optionmenu to change UI color mode
     # ! ===================================================
     def change_appearance_mode_event(self, new_appearance_mode):
@@ -352,7 +393,6 @@ class App(customtkinter.CTk):
 # ! --------------------------------------
 customtkinter.set_appearance_mode("Light")      
 customtkinter.set_default_color_theme("dark-blue.json")
-        
 if __name__ == "__main__":
     app = App()
     app.mainloop()
