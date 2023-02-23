@@ -246,6 +246,7 @@ class App(customtkinter.CTk):
                 self.my_definitions[x].grid_forget()
                 self.button_definitions[x].grid_configure(padx=7)
         
+        # TODO: Change this so that the button name is not based on the length of the list of current buttons; this will prevent buttons from having the same name
         def_num = str(count)
         def_name = "Definition"+def_num
         frame_name = "Frame"+def_num
