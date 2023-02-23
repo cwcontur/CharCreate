@@ -8,7 +8,7 @@ import tkinter as tk
 # import queue
 # import multiprocessing as mp
 from multiprocessing import Pool
-
+import re
 
 class App(customtkinter.CTk):
 
@@ -33,7 +33,6 @@ class App(customtkinter.CTk):
         self.navigation_frame = customtkinter.CTkFrame(self, corner_radius=0)
         self.navigation_frame.grid(row=0, column=0, sticky="nsew")
         self.navigation_frame.grid_rowconfigure(4, weight=1)
-        
         # About button
         # ==================
         self.about_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -42,8 +41,7 @@ class App(customtkinter.CTk):
                                                    fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"), 
                                                    width=100, anchor="w", command=self.about_button_event)
         self.about_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
-        ToolTip(self.about_button, msg="Learn about character creation here!")
-        
+        ToolTip(self.about_button, msg="Learn about character creation here!")        
         # Create button
         # ==================
         self.home_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -132,7 +130,7 @@ class App(customtkinter.CTk):
         self.select_button.grid(row=0, column=1, padx=10, pady=5, sticky="w")
         
         # * Button to delete definitions
-        self.delete_def_butt = customtkinter.CTkButton(self.definition_frame_buttons, width=120, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Delete", command=self.add_definition)
+        self.delete_def_butt = customtkinter.CTkButton(self.definition_frame_buttons, width=120, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Delete", command=self.delete_definition_selection)
         
         # * Segmented button to change between the different pieces of the character creation process
         self.character_aspects_var = customtkinter.StringVar(value="Definitions") # Variable to set the default segmented button selection
@@ -168,12 +166,13 @@ class App(customtkinter.CTk):
         self.def_save_butt.grid(row=0, column=0, padx=(7,2), pady=7, sticky="w")
         self.def_edit_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, width=92, height=40, text="Edit")
         self.def_edit_butt.grid(row=0, column=1, padx=5, pady=7)
+        # TODO: <<<<<<<<<<<<< Will most likely remove this delete button since selection button has been added to allow deletion of definitions >>>>>>>>>>>>
         self.def_delete_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, width=92, height=40, text="Delete")
         self.def_delete_butt.grid(row=0, column=2, padx=(2,7), pady=7, sticky="e")
         
         # ! Currently selected definition so that save, edit, delete buttons function only on selected definition
         # ! ===================
-        self.selected_def = ""
+        self.selected_definitions = []
         # ! ===================
         
         # ! EXTREMELY IMPORTANT: This allows radio buttons to only have one selected at a time
@@ -187,41 +186,68 @@ class App(customtkinter.CTk):
         self.frame_definitions = []
         self.button_definitions = []  
         # ! ===================================
-       
-    def select_definitions(self):
+    
+    # TODO: Figure out how to remove definitions from stored lists in an elegant manner
+    def delete_definition_selection(self):
         print()
+        # count = len(self.selected_definitions)
+        y = 0
+        # global temp_pos
+        # temp_pos = None
+
+        # for x in self.selected_definitions:
+        #     # global temp_pos
+        #     # temp_pos = None
+        #     print(x)
+        #     self.temp_pos = []
+        #     for g in self.my_definitions:
+        #         print(g)
+        #         if g == x:
+        #             self.temp_pos[0] = g
+        #             print(g)
+        #             break
+        #     # temp = self.selected_definitions[y]
+        #     # def_pos = [int(i) for i in temp.split() if i.isdigit()]
+        #     print(self.temp_pos[0])
+        #     self.frame_definitions[self.temp_pos[0]].grid_remove()
+        #     self.my_definitions.pop(self.temp_pos[0])
+        #     self.frame_definitions.pop(self.temp_pos[0])
+        #     self.button_definitions.pop(self.temp_pos[0])
+        #     y += 1
+            
+    # ? Allows selection of multiple definitions by showing checkboxes next to each definition
+    # ? ======================================================================================
+    def select_definitions(self):
+        self.delete_def_butt.grid(row=0, column=2, pady=5, sticky="e")
+        
         count = len(self.my_definitions)
         for x in range(count):
             self.my_definitions[x].grid(row=x, column=0, padx=(7,1), pady=7, sticky="nwes")    
             self.button_definitions[x].grid_configure(padx=(1,7))
+
+    # ? ======================================================================================
           
-   
-        
     def check_curr_def(self):
         print(self.selected_def)
         
-    # ? Removes placeholder text from textbox        
+    # ? Removes placeholder text from textbox
+    # ? =====================================        
     def focus_test(self, val):
         self.textbox.delete("0.0", "end")     
-        
+    # ? =====================================                
     # ? Adding definitions
     # ? ===================================        
-    def add_definition(self):
-        
+    def add_definition(self):  
         count = len(self.my_definitions)
         
         if count != 0:
+            self.delete_def_butt.grid_forget()
             for x in range(count):
                 self.my_definitions[x].grid_forget()
                 self.button_definitions[x].grid_configure(padx=7)
         
-        print(count)
-        # self.co = count
         def_num = str(count)
         def_name = "Definition"+def_num
-        
-        # frame_count = len(self.frame_definitions)
-        # frame_num = str(frame_count)
         frame_name = "Frame"+def_num
         def_button_name = "Button"+def_num
         
@@ -236,134 +262,42 @@ class App(customtkinter.CTk):
         
         self.my_definitions[count] = customtkinter.CTkCheckBox(master=self.frame_definitions[count], width=1, height=1, text="", command=lambda widget=self.my_definitions[count]: self.check_b(widget))
         # self.my_definitions[count].grid(row=count, column=0, padx=(5,2.5), pady=5, sticky="news")
-        
-        # self.var=tk.StringVar(self)
-        # self.var.set('python')
-        # self.radio_var = tk.IntVar(self)
-        # print(radio_var)
-        
-        # self.tes = self.check_r
-        # 
+        # * <<<< Unused radio buttons, keeping for when I need them again so I know the format >>>>
         # self.my_definitions[count] = customtkinter.CTkRadioButton(master=self.frame_definitions[count], border_color="gray95", radiobutton_width=35, radiobutton_height=35, border_width_unchecked=10, border_width_checked=10, width=1, height=1, text="", variable=self.variable, value=count, command=lambda widget=self.my_definitions[count]: self.check_b(widget))
         # self.my_definitions[count].grid(row=count, column=0, padx=(7,1), pady=7, sticky="news")
         
         self.button_definitions[count] = customtkinter.CTkButton(master=self.frame_definitions[count], height=35, corner_radius=10, text="This is a story all about how my life got flip turned upside down and I had a little", fg_color="gray95", command=lambda widget=self.button_definitions[count]: self.check_b(widget))
         self.button_definitions[count].grid(row=count, column=1, padx=7, pady=7, sticky="news")
-        
-        
-    # def check_r(self):
-    #     self.var=tk.StringVar()
-    #     return self.var
-    
+
     # * Little tester for buttons   
     def check_b(self, val):
-        print(self.selected_def)
         
-        # if (val != selected_def) and ("Definition" in selected_def):
-        #     self.temp = [""]
-        #     self.temp[0] = selected_def
-        #     self.temp[0].deselect()
-        # if self.selected_def in "Definition":
-        #     self.selected_def.deselect()
         
-        self.selected_def=val
-        print(val)
+        for x in len(self.my_definitions):
+            if self.button_definitions[x] == val:
+                temp = self.button_definitions[x].get()
+                if temp == 1:
+                    print(val, " button selected!")
+                elif temp == 0:
+                    print(val, " button deselected!")
+        # print(self.selected_def)
+        self.selected_definitions.append(val)
+        
+        # self.selected_def=val
+        # print(val)
     # ? ===================================
 
-    # def def_save(self):
-        
-
-
-    # def start_work(self):
-    #     pool = Pool()
-    #     for x in range(3200):
-    #         x += 1
-    #         stu = str(x) + " / 3200"
-    #         # self.change_fucker(stu)
-    #         self.char_def_counter.configure(text=stu)
-    #         if x == 3200:
-    #             x = 0
-    #         time.sleep(.1)
-
-    # def start_work(self):
-    #     self.process = mp.Process(target=self.work, args=(self.queue,))
-    #     # self.button.configure(state='disabled')
-    #     self.process.start()
-    #     self.periodic_call()
-
-    # def periodic_call(self):
-    #     # check a queue once
-    #     self.check_queue()
-
-    #     # if exit code is None - process is on the run and we should re-schedule check
-    #     if self.process.exitcode is None:
-    #         self.after(100, self.periodic_call)
-    #     # things are executed
-    #     else:
-    #         self.process.join()
-    #         self.button.configure(state='normal')
-    #         self.label.configure(text='Waiting for "work"')
-    #         self.progressbar.configure(value=0)
-
-    # def check_queue(self):
-    #     # common check of the queue
-    #     while self.queue.qsize():
-    #         try:
-    #             self.label.configure(text=self.queue.get(0))
-    #             self.progressbar.configure(value=self.progressbar['value'] + 1)
-    #         except queue.Empty:
-    #             pass
-    
-    # def change_fucker(self, value):
-    #     self.char_def_counter.configure(text=value)
-
-    # def work(self, working_queue):
-        
-    #     for x in range(100):
-    #         working_queue.put(x)
-    #         x += 1
-    #         # working_queue.put(x)
-    #         stu = str(x) + " / 3200"
-    #         self.change_fucker(stu)
-    #         # self.char_def_counter.configure(text=stu)
-    #         if x == 3200:
-    #             x = 0
-    #         time.sleep(.1)        
-        
-        # for type_of_work in ['Combobulationg Discombobulator', 'Pointing towards space',
-        #                     'Calculating Ultimate Answer']:
-        #     working_queue.put(type_of_work)
-        #     time.sleep(1.5)
-           
-    # def test_inc_th(self):
-
-               
-    # def test_inc(self): # ! THIS WILL REQUIRE MULTIPROCESSING
-    #     # self.thread.join()
-    #     # self.thread = Thread(target=self.test_inc)
-    #     # self. thread.start()
-    #     # self.pool.apply_async(worker)
-        
-    #     for x in range(100):
-    #         x += 1
-    #         stu = str(x) + " / 3200"
-    #         self.char_def_counter.configure(text=stu)
-    #         if x == 3200:
-    #             x = 0
-    #         time.sleep(.1)
-        # self.char_def_counter.configure(text="1")
-        # self.thread.join()      
-        
-          
-    # ? Test def to figure out functionality of segmented button
     def seg_butt_test(self, value):
         print(value)
         
     # ? Enables the character definition textbox
+    # ? ============================    
     def textbox_init(self):
         self.textbox.configure(state="normal")
+    # ? ============================    
 
     # ? Allows user to change between the different menus available on the sidebar
+    # ? ====================================================
     def select_frame_by_name(self, name):
         if name == "about":
             self.about_frame.grid(row=0, column=1, padx=20, pady=20, sticky="se")
@@ -377,7 +311,7 @@ class App(customtkinter.CTk):
             self.characters_frame.grid(row=0, column=1, padx=20, pady=20)
         else:
             self.characters_frame.grid_forget()
-
+    # ? ====================================================
     # ? Passes user selection of the menu to change the visible frame
     # ? ============================================================
     def about_button_event(self):
@@ -409,14 +343,9 @@ class App(customtkinter.CTk):
 # ! Program startup
 # ! --------------------------------------
 customtkinter.set_appearance_mode("Light")      
-        
 customtkinter.set_default_color_theme("dark-blue.json")
         
 if __name__ == "__main__":
-
     app = App()
-    # thread = Thread(target=app.test_inc, args=())
-    # thread.start()
     app.mainloop()
-    # thread.join()  
 # ! --------------------------------------
