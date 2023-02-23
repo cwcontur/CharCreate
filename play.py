@@ -16,15 +16,16 @@ class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
 
-        # configure window
+        # Configure window
         self.title("Character Creator")
         self.geometry(f"{1100}x{580}")
         # Min window size
         self.minsize(800, 500)
-        # set grid layout 1x2
+        # Set grid layout 1x2
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
         
+        # Path for icon images
         image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "p_icons")
         
         # ! create navigation frame 
@@ -72,7 +73,7 @@ class App(customtkinter.CTk):
                                                       width=100, anchor="w", command=self.dumb)
         self.save_button.grid(row=3, column=0, padx=5, pady=5, sticky="ew")
         # Navigation frame and UI color scheme selection
-         # ==================       
+        # ==================       
         self.appearance_mode_label = customtkinter.CTkLabel(self.navigation_frame, 
                                                             text="Color Mode:", 
                                                             anchor="w")
@@ -92,9 +93,9 @@ class App(customtkinter.CTk):
         self.initial_create_frame.grid_columnconfigure(0, weight=0)
         self.initial_create_frame.grid_rowconfigure(0, weight=0)
         
-        self.plus_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "w_plus.png")), size=(30,30))
+        self.plus_icon = customtkinter.CTkImage(light_image=Image.open(os.path.join(image_path, "w_plus.png")), size=(25,25))
         
-        self.create_character_button = customtkinter.CTkButton(self.initial_create_frame, corner_radius=10, width=100, height=40, text="Create Character",font=customtkinter.CTkFont(size=18), image=self.plus_icon, command=self.show_character_creation)
+        self.create_character_button = customtkinter.CTkButton(self.initial_create_frame, corner_radius=10, width=100, height=40, text="Create Character", font=customtkinter.CTkFont(size=18), image=self.plus_icon, command=self.show_character_creation)
         self.create_character_button.grid(row=0, column=0, sticky="nsew")
         # ! ---------------------------------------------------------------------------------------------------
         
@@ -109,38 +110,40 @@ class App(customtkinter.CTk):
         self.creation_frame.grid_columnconfigure(2, weight=0)
         self.creation_frame.grid_rowconfigure(0, weight=0)
         self.creation_frame.grid_rowconfigure(1, weight=0)
-        self.creation_frame.grid_rowconfigure(2, weight=1)
+        self.creation_frame.grid_rowconfigure(2, weight=0)
         self.creation_frame.grid_rowconfigure(3, weight=1)
         # ! ==================================================== 
         
         # TODO: DEVELOP AND DEPLOY MULTIPROCESSING FOR GUI
-        self.char_def_counter = customtkinter.CTkLabel(self.creation_frame, height=1, text="0 / 3200", anchor="w")# ! THIS WILL REQUIRE MULTIPROCESSING
-        self.char_def_counter.grid(row=1, column=0, padx=20, pady=3, sticky="nsew")
+        self.char_def_counter = customtkinter.CTkLabel(self.creation_frame, height=1, text="Character Count: 0 / 3200", anchor="w")# ! THIS WILL REQUIRE MULTIPROCESSING
+        self.char_def_counter.grid(row=2, column=0, padx=20, pady=5, sticky="nsew")
+        
+        # ! Frame for definition management buttons above scrollable frame and character counter
+        self.definition_frame_buttons = customtkinter.CTkFrame(self.creation_frame, fg_color="transparent")
+        self.definition_frame_buttons.grid(row=1, column=0, columnspan=2, pady=10, stick="ne")
         
         # * Button to create a new definition
-        self.add_button = customtkinter.CTkButton(self.creation_frame, width=100, height=40, corner_radius=10, text="Definition", image=self.plus_icon, command=self.add_definition) 
-        self.add_button.grid(row=0, column=1, padx=(10,20), pady=(20,5), sticky="ne")
+        self.add_button = customtkinter.CTkButton(self.definition_frame_buttons, width=120, height=40, corner_radius=10, font=customtkinter.CTkFont(size=16), text="Definition", image=self.plus_icon, command=self.add_definition) 
+        self.add_button.grid(row=1, column=1, padx=20, pady=5, sticky="ne")
         
         # * Segmented button to change between the different pieces of the character creation process
         self.character_aspects_var = customtkinter.StringVar(value="Definitions") # Variable to set the default segmented button selection
-        self.character_aspects = customtkinter.CTkSegmentedButton(self.creation_frame, height=40, corner_radius=10, values=["Definitions", "Long Description", "Short Description", "Greeting"], command=self.seg_butt_test, variable=self.character_aspects_var)
-        self.character_aspects.grid(row=0, column=0, padx=(20,10), pady=(20,5), stick="nw")
-        
-
+        self.character_aspects = customtkinter.CTkSegmentedButton(self.creation_frame, height=40, corner_radius=10, values=["Definitions", "Long Description", "Short Description", "Greeting"], font=customtkinter.CTkFont(size=15, family="<SF pro light>"), command=self.seg_butt_test, variable=self.character_aspects_var)
+        self.character_aspects.grid(row=0, column=0, columnspan=2, padx=20, pady=(20,5), stick="nwes")
             
-        # * Scrollable frame for definitions
+        # ! Scrollable frame for definitions
         self.my_frame = customtkinter.CTkScrollableFrame(self.creation_frame, width=1920, height=1080, corner_radius=10)
-        self.my_frame.grid(row=2, column=0, columnspan=2, rowspan=4, padx=20, pady=(5,20), sticky="se")
+        self.my_frame.grid(row=3, column=0, columnspan=2, rowspan=4, padx=20, pady=(5,20), sticky="se")
         self.my_frame.grid_columnconfigure(0, weight=1)
 
         # * Textbox to type definition in        
-        self.textbox = customtkinter.CTkTextbox(self.creation_frame, wrap="word", corner_radius=10)
-        self.textbox.grid(row=0, rowspan=3, column=2, padx=20, pady=(20,10), sticky="se")
+        self.textbox = customtkinter.CTkTextbox(self.creation_frame, wrap="word", corner_radius=10, width=300)
+        self.textbox.grid(row=0, rowspan=4, column=2, padx=(10,20), pady=(20,10), sticky="ne")
         self.textbox.insert("0.0", "Type definition here..." )
         self.textbox.configure(state="disabled")
         self.textbox.bind("<FocusIn>", self.focus_test)
 
-        
+        # TODO: Will use on long description tab instead of definition tab
         # # * Tabview to show grammar stuff
         # self.tabview_def = customtkinter.CTkTabview(self.creation_frame, width=300, height=230, corner_radius=10)
         # self.tabview_def.grid(row=3, column=2, padx=20, pady=(10,20), sticky="nw")
@@ -149,16 +152,16 @@ class App(customtkinter.CTk):
         # self.tabview_def.add("Synonyms")
         # self.tabview_def.add("Antonyms")
         
-        # * Save, Edit, Delete buttons for definition functionality
+        # ! Save, Edit, Delete buttons for definition functionality
         self.textbox_buttons = customtkinter.CTkFrame(self.creation_frame, corner_radius=10)
-        self.textbox_buttons.grid(row=4, column=2, padx=20, pady=(10,20), sticky="se")
+        self.textbox_buttons.grid(row=4, column=2, padx=(10,20), pady=(10,20), sticky="se")
         
-        self.def_save_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, height=40, text="Save", command=self.check_curr_def)
-        self.def_save_butt.grid(row=0, column=0, padx=(7,2), pady=7, sticky="news")
-        self.def_edit_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, height=40, text="Edit")
-        self.def_edit_butt.grid(row=0, column=1, padx=5, pady=7, sticky="news")
-        self.def_delete_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, height=40, text="Delete")
-        self.def_delete_butt.grid(row=0, column=2, padx=(2,7), pady=7, sticky="news")
+        self.def_save_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, width=92, height=40, text="Save", command=self.check_curr_def)
+        self.def_save_butt.grid(row=0, column=0, padx=(7,2), pady=7, sticky="w")
+        self.def_edit_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, width=92, height=40, text="Edit")
+        self.def_edit_butt.grid(row=0, column=1, padx=5, pady=7)
+        self.def_delete_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, width=92, height=40, text="Delete")
+        self.def_delete_butt.grid(row=0, column=2, padx=(2,7), pady=7, sticky="e")
         
         # ! Currently selected definition so that save, edit, delete buttons function only on selected definition
         # ! ===================
@@ -217,11 +220,11 @@ class App(customtkinter.CTk):
         
         # self.tes = self.check_r
         # 
-        # self.my_definitions[count] = customtkinter.CTkRadioButton(master=self.frame_definitions[count], radiobutton_width=30, radiobutton_height=30, border_width_unchecked=5, border_width_checked=10, width=1, height=1, text="", variable=self.variable, value=count, command=lambda widget=self.my_definitions[count]: self.check_b(widget))
-        # self.my_definitions[count].grid(row=count, column=0, padx=(5,2.5), pady=5, sticky="news")
+        # self.my_definitions[count] = customtkinter.CTkRadioButton(master=self.frame_definitions[count], border_color="gray95", radiobutton_width=35, radiobutton_height=35, border_width_unchecked=10, border_width_checked=10, width=1, height=1, text="", variable=self.variable, value=count, command=lambda widget=self.my_definitions[count]: self.check_b(widget))
+        # self.my_definitions[count].grid(row=count, column=0, padx=(7,1), pady=7, sticky="news")
         
-        self.button_definitions[count] = customtkinter.CTkButton(master=self.frame_definitions[count], corner_radius=10, text="This is a story all about how my life got flip turned upside down and I had a little", fg_color="gray95", command=lambda widget=self.button_definitions[count]: self.check_b(widget))
-        self.button_definitions[count].grid(row=count, column=1, padx=3, pady=3, sticky="news")
+        self.button_definitions[count] = customtkinter.CTkButton(master=self.frame_definitions[count], height=35, corner_radius=10, text="This is a story all about how my life got flip turned upside down and I had a little", fg_color="gray95", command=lambda widget=self.button_definitions[count]: self.check_b(widget))
+        self.button_definitions[count].grid(row=count, column=1, padx=(7,7), pady=7, sticky="news")
         
         
     # def check_r(self):
@@ -381,7 +384,7 @@ class App(customtkinter.CTk):
 
 # ! Program startup
 # ! --------------------------------------
-# customtkinter.set_appearance_mode("Light")      
+customtkinter.set_appearance_mode("Light")      
         
 customtkinter.set_default_color_theme("dark-blue.json")
         
