@@ -411,14 +411,12 @@ class App(customtkinter.CTk):
     # ! ===================================================
     def change_appearance_mode_event(self, new_appearance_mode):
         customtkinter.set_appearance_mode(new_appearance_mode)  
-    # ! ===================================================        
-
-
-
+    # ! =================================================== 
+        
 # ! Program startup
 # ! --------------------------------------
 customtkinter.set_appearance_mode("Light")      
-customtkinter.set_default_color_theme("dark-blue.json")
+customtkinter.set_default_color_theme("custom-theme.json")
 if __name__ == "__main__":
     app = App()
     app.mainloop()
