@@ -232,7 +232,7 @@ class App(customtkinter.CTk):
         
     # ? Removes placeholder text from textbox
     # ? =====================================        
-    def focus_test(self, val):
+    def focus_test(self):
         self.textbox.delete("0.0", "end")     
     # ? =====================================                
     # ? Adding definitions
@@ -269,6 +269,7 @@ class App(customtkinter.CTk):
         
         self.button_definitions[count] = customtkinter.CTkButton(master=self.frame_definitions[count], height=35, corner_radius=10, text="This is a story all about how my life got flip turned upside down and I had a little", fg_color="gray95", command=lambda widget=self.button_definitions[count]: self.check_b(widget))
         self.button_definitions[count].grid(row=count, column=1, padx=7, pady=7, sticky="news")
+        
 
     # * Little tester for buttons   
     def check_b(self, val):
