@@ -3,7 +3,8 @@ from tktooltip import ToolTip
 import os
 from PIL import Image
 import time
-import tkinter as tk             
+import tkinter as tk         
+# import definitions    
 class App(customtkinter.CTk):
     def __init__(self):
         super().__init__()
@@ -41,6 +42,9 @@ class App(customtkinter.CTk):
                                                    width=100, anchor="w", command=self.home_button_event)
         self.home_button.grid(row=1, column=0, padx=5, pady=5, sticky="ew")
         ToolTip(self.home_button, msg="Everything you need to create your character!")
+        
+        # self.def_menu = definitions.Definition(self.home_frame)
+        
         # Characters button
         # ==================
         self.characters_frame = customtkinter.CTkFrame(self, corner_radius=0, fg_color="transparent")
@@ -244,14 +248,20 @@ class App(customtkinter.CTk):
     def delete_definition_selection(self):
         self.removed_count = 0
         y = 0
+        print(self.my_definitions)
         # Iterates through all button names for defs
         for x in self.definition_name:
             # Makes sure that only selected definitions are removed  
             if self.my_definitions[y].get() == 1:
                 self.frame_definitions[y].grid_remove()
+                self.my_definitions.remove(self.my_definitions[y])
+                print(y)
+                # self.frame_definitions[y].pop()
+                # self.button_definitions[y].pop()
                 self.removed_count += 1 # Keeps track of how many definitions were removed
             y+=1 # List position tracker   
         self.butt_num -= self.removed_count # Makes sure current count of the def buttons is correct
+        self.select_definitions
     # ? ================================================
     # ? Allows selection of multiple definitions by showing checkboxes next to each definition
     # ? Switches to cancel button that also makes all checkboxes disappear and delete button to be removed
@@ -265,7 +275,8 @@ class App(customtkinter.CTk):
             self.select_state = False
             for x in range(self.butt_num):
                 # print(x)
-                # print(self.my_definitions[x])
+                print(self.my_definitions[x])
+                print(self.definition_name[x])
                 self.my_definitions[x].grid_forget()
                 self.button_definitions[x].grid_configure(padx=5)
         else:   
