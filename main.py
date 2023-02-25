@@ -252,14 +252,16 @@ class App(customtkinter.CTk):
         # Iterates through all button names for defs
         for x in self.definition_name:
             # Makes sure that only selected definitions are removed  
+            print(len(self.my_definitions))
             if self.my_definitions[y].get() == 1:
                 self.frame_definitions[y].grid_remove()
                 self.my_definitions.remove(self.my_definitions[y])
                 print(y)
+                y+=1
                 # self.frame_definitions[y].pop()
                 # self.button_definitions[y].pop()
                 self.removed_count += 1 # Keeps track of how many definitions were removed
-            y+=1 # List position tracker   
+            y+=1 # List position tracker
         self.butt_num -= self.removed_count # Makes sure current count of the def buttons is correct
         self.select_definitions
     # ? ================================================
@@ -275,8 +277,8 @@ class App(customtkinter.CTk):
             self.select_state = False
             for x in range(self.butt_num):
                 # print(x)
-                print(self.my_definitions[x])
-                print(self.definition_name[x])
+                # print(self.my_definitions[x])
+                # print(self.definition_name[x])
                 self.my_definitions[x].grid_forget()
                 self.button_definitions[x].grid_configure(padx=5)
         else:   
