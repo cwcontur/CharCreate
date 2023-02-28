@@ -249,29 +249,52 @@ class App(customtkinter.CTk):
     # ? Allows deletion of definitions that are selected
     # ? ================================================
     def delete_definition_selection(self):
+        self.removing = [] # Defs to be removed
         self.removed_count = 0
-        y = (len(self.my_definitions))
         # print(y)
         # print(len(self.definition_name))
         # Iterates through all button names for defs
-        for x in self.my_definitions: # ! Was self.definition_name
+        print("Butts: ", self.butt_num)
+        for x in range(self.butt_num): # ! Was self.definition_name
             # Makes sure that only selected definitions are removed  
             # print("y: ", y)
             # print("my_def length: ", len(self.my_definitions))
             # print("y: ",y)
             # print(self.my_definitions[y-1].get())
-            if self.my_definitions[y-1].get() == 1:
-                self.frame_definitions[y-1].grid_remove()
-                self.my_definitions.remove(self.my_definitions[y-1])
-                y -= 1
+            if self.my_definitions[x].get() == 1:
+                self.removing.append(x)
+                print("To be removed:",x)
+                
+                # print(x)
+                # print(self.definition_name[y])
+                # self.frame_definitions[y].grid_remove()
+                # print(y)
+                # self.my_definitions.remove(self.my_definitions[x])
+                
                 # print(self.my_definitions[y-1], " :removed & y: ", y)
                 # y+=1
                 # self.frame_definitions[y].pop()
                 # self.button_definitions[y].pop()
                 self.removed_count += 1 # Keeps track of how many definitions were removed
-            else:
-                y-=1 # List position tracker
+
         self.butt_num -= self.removed_count # Makes sure current count of the def buttons is correct
+        print("After deleted:", self.butt_num)
+        
+        y = 0
+        
+        for x in self.removing:
+            print("removing:", x)
+            # self.my_definitions.remove(self.my_definitions[x])
+
+            self.frame_definitions[x].grid_remove()
+            # self.frame_definitions.remove(self.frame_definitions[x])
+            y += 1
+            
+        # for x in self.removing:
+        #     # self.frame_definitions.remove(self.frame_definitions[x])
+        #     self.my_definitions.remove(self.my_definitions[x])
+        #     self.button_definitions.remove(self.button_definitions[x])
+        #     self.bg_button_names.remove(self.bg_button_names[x])
         self.select_definitions
     # ? ================================================
     # ? Allows selection of multiple definitions by showing checkboxes next to each definition
@@ -281,6 +304,8 @@ class App(customtkinter.CTk):
         # self.count = len(self.my_definitions)
         # * Checks button state to see if it has been pressed
         if self.select_state == True:
+            print("Butts: ", self.butt_num)
+
             self.delete_def_butt.grid_forget()
             self.select_button.configure(text="Select")
             self.select_state = False
@@ -288,16 +313,22 @@ class App(customtkinter.CTk):
                 # print(x)
                 # print(self.my_definitions[x])
                 # print(self.definition_name[x])
+                print("Row:", x)
+                print(self.my_definitions[x])
                 self.my_definitions[x].grid_forget()
-                self.button_definitions[x].grid_configure(padx=(5,0))
+                self.button_definitions[x].grid_configure(row=x, padx=(5,0))
+                self.bg_button_names[x].grid_configure(row=x)
         else:   
             self.select_state = True
             self.delete_def_butt.grid(row=0, column=2, pady=5, sticky="e")
             self.select_button.configure(text="Cancel")
             # print(self.butt_num)
             for x in range(self.butt_num):
-                self.my_definitions[x].grid(row=x, column=0, padx=(5,0), pady=5, sticky="nwes")    
-                self.button_definitions[x].grid_configure(padx=(5,0))
+                print("Row Secondary:", x)
+
+                self.my_definitions[x].grid(row=x, column=0, padx=(5,0), sticky="news")    
+                self.button_definitions[x].grid_configure(row=x, padx=(5,0))
+                self.bg_button_names[x].grid_configure(row=x)
     # ? ======================================================================================                      
     # ? Adding definitions
     # ? ===================================        
@@ -322,8 +353,9 @@ class App(customtkinter.CTk):
         # print(self.button_definitions)
         self.frame_definitions[self.butt_num] = customtkinter.CTkFrame(self.my_frame, corner_radius=0, fg_color="transparent")
         self.frame_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=0, pady=0, sticky="news")
-        self.frame_definitions[self.butt_num].columnconfigure(1, weight=1)
-        self.frame_definitions[self.butt_num].columnconfigure(0, weight=0)
+        self.frame_definitions[self.butt_num].grid_columnconfigure(1, weight=1)
+        self.frame_definitions[self.butt_num].grid_columnconfigure(0, weight=0)
+        self.frame_definitions[self.butt_num].grid_rowconfigure(self.butt_num, weight=0)
         
         # TODO: checkbox command not being used, so it has been removed since only button state is important
         # , command=lambda widget=self.my_definitions[count]: self.check_b(widget) 
