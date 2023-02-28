@@ -315,7 +315,7 @@ class App(customtkinter.CTk):
                 # print(self.definition_name[x])
                 print("Row:", x)
                 print(self.my_definitions[x])
-                self.my_definitions[x].grid_forget()
+                self.my_definitions[x].grid_forget() # TODO: Somehow this thinks it is the wrong button when it shouldn't be the wrong button
                 self.button_definitions[x].grid_configure(row=x, padx=(5,0))
                 self.bg_button_names[x].grid_configure(row=x)
         else:   
