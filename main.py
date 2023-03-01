@@ -11,7 +11,7 @@ class App(customtkinter.CTk):
         super().__init__()
         # Configure window
         self.title("Character Creator")
-        self.geometry(f"{1100}x{580}")
+        self.geometry(f"{1200}x{650}")
         # Min window size
         self.minsize(800, 500)
         # Set grid layout 1x2

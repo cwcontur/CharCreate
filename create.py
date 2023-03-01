@@ -278,7 +278,7 @@ class Create_Frame(customtkinter.CTkFrame):
         # Button used to display and store the definition itself
         # ===========================        
         self.button_definitions[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, corner_radius=0,
-                                                                         font=customtkinter.CTkFont(size=15), fg_color="#F9F9FA", text_color="gray10", text=str(self.butt_num), anchor="w", 
+                                                                         font=customtkinter.CTkFont(size=17), fg_color="#F9F9FA", text_color="gray10", text=str(self.butt_num), anchor="w", 
                                                                          command= lambda widget=self.butt_num: self.textbox_init(widget))
         self.button_definitions[self.butt_num].grid(row=self.butt_num, column=1, padx=(5,0), pady=2, sticky="news")
         
@@ -295,13 +295,22 @@ class Create_Frame(customtkinter.CTkFrame):
     # TODO: ====================================    
     
     # TODO: Check for radio button selection to auto format text input to the desired type of definition
+    # TODO: Make other definition buttons disabled while editing so that text typed isn't lose
     # ? Takes textbox input and saves it to button text so that definition can be stored
     # ? =================================================
     def save_text_to(self):
         b_text = str(self.textbox.get("0.0", "end")) # Gets text from textbox
         formatted = b_text.rstrip('\r\n') # Removes return inputs and newlines
-        self.button_definitions[self.current_definition].configure(text=formatted,anchor="w") # Saves text to button
-        print(self.button_definitions[self.current_definition])
+        # Adds formatting for definitions
+        # ===========================
+        if self.variable.get() == 0:
+            formatted = "[" + formatted + "]"
+        elif self.variable.get() == 1:
+            formatted = "((" + formatted + "))"
+        elif self.variable.get() == 2:
+            formatted = "{" + formatted + "}"
+        # ===========================
+        self.button_definitions[self.current_definition].configure(text=formatted, anchor="e") # Saves text to button
     # ? =================================================
     # ? Enables the character definition textbox
     # ? ============================    
@@ -311,10 +320,24 @@ class Create_Frame(customtkinter.CTkFrame):
     def textbox_init(self, curr_butt):
         self.textbox.configure(state="normal") # Makes textbox usable
         self.textbox.delete("0.0", "end") # Clears placeholder/previous text
-        self.textbox.insert("0.0", self.button_definitions[curr_butt].cget('text'))
+        text = self.button_definitions[curr_butt].cget('text')
+        
+        # Removes formatting around definitions so that they are easy to edit and read
+        # ==================================
+        if "[" in text:
+            text = text[1:]
+            text = text[:1]
+        elif "{" in text:
+            text = text[1:]
+            text = text[:1]
+        elif "((" in text:
+            text = text[2:]
+            text = text[:1]
+        # ==================================                      
+        self.textbox.insert("0.0", text)
         self.current_definition = curr_butt # Keeps track of current definition
         self.def_save_butt.configure(state="normal") # Enables save button to save definition
-        
+        # self.textbox.configure(state="disabled") # TODO: Add edit button so definitions aren't accidentally edited
         if self.select_state == True: # Select button logic to keep it from being active or from toggling when it shouldn't
             self.my_definitions[curr_butt].select()
     # ? ============================    
