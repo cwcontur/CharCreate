@@ -295,7 +295,6 @@ class Create_Frame(customtkinter.CTkFrame):
     # TODO: ====================================    
     
     # TODO: Check for radio button selection to auto format text input to the desired type of definition
-    # TODO: Make other definition buttons disabled while editing so that text typed isn't lose
     # ? Takes textbox input and saves it to button text so that definition can be stored
     # ? =================================================
     def save_text_to(self):
@@ -310,12 +309,14 @@ class Create_Frame(customtkinter.CTkFrame):
         elif self.variable.get() == 2:
             formatted = "{" + formatted + "}"
         # ===========================
+        # TODO: Fix text alignment when text is longer than button in window is
         self.button_definitions[self.current_definition].configure(text=formatted, anchor="e") # Saves text to button
     # ? =================================================
     # ? Enables the character definition textbox
     # ? ============================    
     def textbox_focus_disable(self, val): # No idea what the issue is with enabling textbox, so this dummy function stays for now
         why = None # Press F to pay respects
+    # TODO: Make other definition buttons disabled while editing so that text typed isn't lose
     # ? ============================            
     def textbox_init(self, curr_butt):
         self.textbox.configure(state="normal") # Makes textbox usable
