@@ -35,7 +35,6 @@ class Create_Frame(customtkinter.CTkFrame):
         # ! Frame to display the 'Create' menu screen
         # ! ====================================================
         self.creation_frame = customtkinter.CTkFrame(self.parent, corner_radius=0, fg_color="transparent") # grid() initializer is included in show_character_creation()
-        # self.creation_frame.grid(row=0, column=0, sticky="news")
         self.creation_frame.grid_columnconfigure(0, weight=1)
         self.creation_frame.grid_columnconfigure(1, weight=0)
         self.creation_frame.grid_columnconfigure(2, weight=0)
@@ -175,6 +174,7 @@ class Create_Frame(customtkinter.CTkFrame):
         # ! Variables for program and button functionality
         # ! ===================================
         self.current_definition = ""
+        self.def_num = [] # Keeps track of the number the definitions are assigned so that there's no confusion amongst the functions
         self.definition_name = [] # List of readable button names for comparison purposes
         self.my_definitions = [] # List of the checkboxes that are used for def selection
         self.frame_definitions = [] # List of frames that are used for the def buttons and the checkbox
@@ -184,54 +184,27 @@ class Create_Frame(customtkinter.CTkFrame):
         self.butt_num = 0 # Keeps track of how many buttons there are for definitions    
         self.select_state = False # Tracks select button state to see if it has been pressed
         # ! ===================================
-        
-    # TODO: Definition deletion logic is broken somehow, figure out why list is 'out of bounds' or why it's simply not removing definitions as it should be
     # ? Allows deletion of definitions that are selected
     # ? ================================================
     def delete_definition_selection(self):
         self.removing = [] # Defs to be removed
-        self.removed_count = 0
-        # print(y)
-        # print(len(self.definition_name))
-        # Iterates through all button names for defs
-        # print("Delete Butts: ", self.butt_num)
         for x in range(self.butt_num): # ! Was self.definition_name
-            # Makes sure that only selected definitions are removed  
-            # print("y: ", y)
-            # print("my_def length: ", len(self.my_definitions))
-            # print("y: ",y)
-            # print(self.my_definitions[y-1].get())
             if self.my_definitions[x].get() == 1:
                 self.removing.append(x)
-                # print("To be removed:",x)
+                self.my_definitions[x].deselect() # Deselects checkbox so that it doesn't affect logic, box is reused
                 
-                # print(x)
-                # print(self.definition_name[y])
-                # self.frame_definitions[y].grid_remove()
-                # print(y)
-                # self.my_definitions.remove(self.my_definitions[x])
-                
-                # print(self.my_definitions[y-1], " :removed & y: ", y)
-                # y+=1
-                # self.frame_definitions[y].pop()
-                # self.button_definitions[y].pop()
-                self.removed_count += 1 # Keeps track of how many definitions were removed
-
-        self.butt_num -= self.removed_count # Makes sure current count of the def buttons is correct
-        # print("After deleted:", self.butt_num)
-        
-        y = 0
-        # print("self.removing: ", self.removing)
+                # Removes definition text from textbox if it's deleted
+                # ===========================
+                text = str(self.textbox.get("0.0", "end"))
+                temp = text.rstrip('\r\n')
+                if str(self.button_definitions[x].cget('text')) == temp:
+                    self.textbox.delete("0.0", "end")
+                    self.textbox.insert("0.0", "Type definition here...")
+                # ===========================
+                    
         for x in self.removing:
-            # print("To be Removed:", x)
-            # self.my_definitions.remove(self.my_definitions[x])
-            print(len(self.frame_definitions))
             self.frame_definitions[x].grid_remove()
-            # self.frame_definitions.remove(self.frame_definitions[x])
-            y += 1
-            
-        # for x in self.removing:
-        #     self.frame_definitions.remove(self.frame_definitions[x])
+            self.def_num.remove(x)
         self.removing = []
         self.select_definitions
     # ? ================================================
@@ -239,39 +212,29 @@ class Create_Frame(customtkinter.CTkFrame):
     # ? Switches to cancel button that also makes all checkboxes disappear and delete button to be removed
     # ? ======================================================================================
     def select_definitions(self):
-        # self.count = len(self.my_definitions)
         # * Checks button state to see if it has been pressed
         if self.select_state == True:
-            print("Butts: ", self.butt_num)
-
             self.delete_def_butt.grid_forget()
             self.select_button.configure(text="Select")
             self.select_state = False
-            for x in range(self.butt_num):
-                # print(x)
-                # print(self.my_definitions[x])
-                # print(self.definition_name[x])
-                print("Row:", x)
-                print(self.my_definitions[x])
-                self.my_definitions[x].grid_forget() # TODO: Somehow this thinks it is the wrong button when it shouldn't be the wrong button
+            for x in self.def_num:
+                self.my_definitions[x].grid_forget() 
                 self.button_definitions[x].grid_configure(row=x, padx=(5,0))
                 self.bg_button_names[x].grid_configure(row=x)
-                self.frame_definitions[x].update()
         else:   
             self.select_state = True
             self.delete_def_butt.grid(row=0, column=2, pady=5, sticky="e")
             self.select_button.configure(text="Cancel")
-            # print(self.butt_num)
-            for x in range(self.butt_num):
-                print("Row Secondary:", x)
-
+            for x in self.def_num:
                 self.my_definitions[x].grid(row=x, column=0, padx=(5,0), sticky="news")    
                 self.button_definitions[x].grid_configure(row=x, padx=(5,0))
                 self.bg_button_names[x].grid_configure(row=x)
     # ? ======================================================================================                      
     # ? Adding definitions
     # ? ===================================        
-    def add_definition(self):          
+    def add_definition(self):   
+        # Removes checkboxes, cancel, and delete buttons when new definitions are added
+        # ===========================        
         if self.select_state == True:
             self.select_button.configure(text="Select")
             self.delete_def_butt.grid_forget()
@@ -279,45 +242,53 @@ class Create_Frame(customtkinter.CTkFrame):
                 self.my_definitions[x].grid_forget()
                 self.button_definitions[x].grid_configure(padx=(5,0))
         
+        # Name creation for definition item aspects
+        # ===========================        
         def_num = str(self.butt_num)
         def_name = "Definition"+def_num
         frame_name = "Frame"+def_num
         def_button_name = "Button"+def_num
         bg_button_name = "bg_button"+def_num
         
+        # Lists for each of the definition item aspects
+        # ===========================        
         self.my_definitions.append(def_name)
         self.frame_definitions.append(frame_name)
         self.button_definitions.append(def_button_name)
         self.bg_button_names.append(bg_button_name)
-        # print(self.button_definitions)
+        
+        # Frame for definition buttons
+        # ===========================
         self.frame_definitions[self.butt_num] = customtkinter.CTkFrame(self.my_frame, corner_radius=0, fg_color="transparent")
         self.frame_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=0, pady=0, sticky="news")
         self.frame_definitions[self.butt_num].grid_columnconfigure(1, weight=1)
         self.frame_definitions[self.butt_num].grid_columnconfigure(0, weight=0)
         self.frame_definitions[self.butt_num].grid_rowconfigure(self.butt_num, weight=0)
-        
-        # TODO: checkbox command not being used, so it has been removed since only button state is important
-        # , command=lambda widget=self.my_definitions[count]: self.check_b(widget) 
+
+        # Checkbox to select definitions
+        # ===========================        
         self.my_definitions[self.butt_num] = customtkinter.CTkCheckBox(master=self.frame_definitions[self.butt_num], width=1, height=1, border_width=4, text="")
         
+        # Background button to add left aligned accent
+        # ===========================        
         self.bg_button_names[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, width=1000, corner_radius=0,
                                                                          fg_color="#2CC985", text="", state="disabled")
         self.bg_button_names[self.butt_num].grid(row=self.butt_num, column=1, padx=0, pady=0, sticky="w")
         
+        # Button used to display and store the definition itself
+        # ===========================        
         self.button_definitions[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, corner_radius=0,
                                                                          font=customtkinter.CTkFont(size=15), fg_color="#F9F9FA", text_color="gray10", text=str(self.butt_num), anchor="w", 
                                                                          command= lambda widget=self.butt_num: self.textbox_init(widget))
         self.button_definitions[self.butt_num].grid(row=self.butt_num, column=1, padx=(5,0), pady=2, sticky="news")
         
-
-        
         # ! Allows program to keep track of the number of definitions present and also the proper name of the definitions
         # ! ===================================================
+        self.def_num.append(self.butt_num)
         self.definition_name.append(self.my_definitions[self.butt_num])
         self.butt_num += 1
         # ! ===================================================
     # ? ===================================
-    
     # TODO: Implement other segmented button menus for other character aspects
     def seg_butt_test(self, value):
         print(value)
@@ -338,7 +309,6 @@ class Create_Frame(customtkinter.CTkFrame):
         why = None # Press F to pay respects
     # ? ============================            
     def textbox_init(self, curr_butt):
-        print(curr_butt) #)
         self.textbox.configure(state="normal") # Makes textbox usable
         self.textbox.delete("0.0", "end") # Clears placeholder/previous text
         self.textbox.insert("0.0", self.button_definitions[curr_butt].cget('text'))
@@ -346,34 +316,8 @@ class Create_Frame(customtkinter.CTkFrame):
         self.def_save_butt.configure(state="normal") # Enables save button to save definition
         
         if self.select_state == True: # Select button logic to keep it from being active or from toggling when it shouldn't
-            self.select_definitions()
+            self.my_definitions[curr_butt].select()
     # ? ============================    
-    # ? Allows user to change between the different menus available on the sidebar
-    # ? ====================================================
-    # def select_frame_by_name(self, name):
-    #     if name == "about":
-    #         self.about_frame.grid(row=0, column=1, padx=20, pady=20, sticky="se")
-    #     else:
-    #         self.about_frame.grid_forget()
-    #     if name == "create":
-    #         self.home_frame.grid(row=0, column=1)
-    #     else:
-    #         self.home_frame.grid_forget()
-    #     if name == "char":
-    #         self.characters_frame.grid(row=0, column=1, padx=20, pady=20)
-    #     else:
-    #         self.characters_frame.grid_forget()
-    # ? ====================================================
-    # ? Passes user selection of the menu to change the visible frame
-    # ? ============================================================
-    # def about_button_event(self):
-    #     self.select_frame_by_name("about")
-
-    # def home_button_event(self):
-    #     self.select_frame_by_name("create")
-        
-    # def char_button_event(self):
-    #     self.select_frame_by_name("char")
 
     def show_character_creation(self):
         self.initial_create_frame.grid_forget()
