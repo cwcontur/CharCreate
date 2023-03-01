@@ -5,8 +5,7 @@ from PIL import Image
 import time
 import tkinter as tk         
 # import definitions    
-import sepT
-# class Create_Frame(customtkinter.CTk):
+import create # class Create_Frame(customtkinter.CTk):
 #     def __init__(self, parent, controller):
 #         super().__init__(self)
 #         self.controller = controller
@@ -428,7 +427,7 @@ class App(customtkinter.CTk):
                                                                 width=90, state="disabled")
         self.appearance_mode_menu.grid(row=6, column=0, padx=5, pady=5, sticky="s")
         
-        self.initial_create_frame = sepT.Create_Frame()
+        self.initial_create_frame = create.Create_Frame(self.home_frame)
     #     # ! ---------------------------------------------------------------------------------------------------
     #     # ! Create -> Character Create Button
     #     # ! ---------------------------------------------------------------------------------------------------
@@ -721,6 +720,7 @@ class App(customtkinter.CTk):
             self.about_frame.grid_forget()
         if name == "create":
             self.home_frame.grid(row=0, column=1)
+            # self.home_frame.grid_columnconfigure(1, weight=0)
         else:
             self.home_frame.grid_forget()
         if name == "char":
