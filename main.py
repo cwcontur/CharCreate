@@ -32,7 +32,8 @@ class App(customtkinter.CTk):
                                                    fg_color="transparent", text_color=("gray10", "gray90"), hover_color=("gray70", "gray30"), 
                                                    width=100, anchor="w", command=self.about_button_event)
         self.about_button.grid(row=0, column=0, padx=5, pady=5, sticky="ew")
-        ToolTip(self.about_button, msg="Learn about character creation here!")   
+        self.Tool_test = customtkinter.CTkTooltip(self.about_button, msg="Learn about character creation here!")
+        # ToolTip(self.about_button, msg="Learn about character creation here!")   
              
         # Create button
         # ==================

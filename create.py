@@ -105,6 +105,7 @@ class Create_Frame(customtkinter.CTkFrame):
         self.my_frame = customtkinter.CTkScrollableFrame(self.creation_frame, width=1920, height=1080, corner_radius=10)
         self.my_frame.grid(row=3, column=0, columnspan=2, rowspan=4, padx=20, pady=(5,20), sticky="se")
         self.my_frame.grid_columnconfigure(0, weight=1)
+        self.my_frame.grid_columnconfigure(1, weight=1)
         # ! ====================================================
 
         # * Textbox to type definition in        
@@ -163,13 +164,16 @@ class Create_Frame(customtkinter.CTkFrame):
         self.textbox_buttons.grid(row=5, column=2, padx=(10,20), pady=(10,20), sticky="se")
         
         self.def_save_butt = customtkinter.CTkButton(self.textbox_buttons, 
-                                                     corner_radius=10, width=286, height=40, 
+                                                     corner_radius=10, width=140, height=40, 
                                                      text="Save", font=customtkinter.CTkFont(size=16), 
                                                      state="disabled", command=self.save_text_to)
-        self.def_save_butt.grid(row=0, column=0, padx=(7,7), pady=7, sticky="news")
+        self.def_save_butt.grid(row=0, column=0, padx=(7,3), pady=7, sticky="news")
         # * <<<<<<<< Original edit button, use to make new one >>>>>>>>>
-        # self.def_edit_butt = customtkinter.CTkButton(self.textbox_buttons, corner_radius=10, width=92, height=40, text="Edit")
-        # self.def_edit_butt.grid(row=0, column=1, padx=5, pady=7)
+        self.def_edit_butt = customtkinter.CTkButton(self.textbox_buttons, 
+                                                     corner_radius=10, width=140, height=40, 
+                                                     text="Edit", font=customtkinter.CTkFont(size=16),
+                                                     command=self.text_edit, state="disabled")
+        self.def_edit_butt.grid(row=0, column=1, padx=(3,7), pady=7, sticky="news")
                # ! ====================================================        
         # ! Variables for program and button functionality
         # ! ===================================
@@ -177,9 +181,12 @@ class Create_Frame(customtkinter.CTkFrame):
         self.def_num = [] # Keeps track of the number the definitions are assigned so that there's no confusion amongst the functions
         self.definition_name = [] # List of readable button names for comparison purposes
         self.my_definitions = [] # List of the checkboxes that are used for def selection
-        self.frame_definitions = [] # List of frames that are used for the def buttons and the checkbox
-        self.button_definitions = [] # List of names for buttons that display the definition
+        self.frame_definitions = [] # List of frames that are used for the def buttons, labels and the checkbox
+        self.button_definitions = [] # List of names for buttons that allow direct interaction with definitions
+        self.label_definitions = [] # List of names for labels that store definition text
         self.bg_button_names = [] # List of names for background buttons
+        
+        self.test_add = []
         # ! ===================================
         self.butt_num = 0 # Keeps track of how many buttons there are for definitions    
         self.select_state = False # Tracks select button state to see if it has been pressed
@@ -200,6 +207,7 @@ class Create_Frame(customtkinter.CTkFrame):
                 if str(self.button_definitions[x].cget('text')) == temp:
                     self.textbox.delete("0.0", "end")
                     self.textbox.insert("0.0", "Type definition here...")
+                    self.def_edit_butt.configure(state="disabled")
                 # ===========================
                     
         for x in self.removing:
@@ -219,15 +227,20 @@ class Create_Frame(customtkinter.CTkFrame):
             self.select_state = False
             for x in self.def_num:
                 self.my_definitions[x].grid_forget() 
-                self.button_definitions[x].grid_configure(row=x, padx=(5,0))
+                self.button_definitions[x].grid_configure(row=x)
                 self.bg_button_names[x].grid_configure(row=x)
+                self.my_frame.grid_columnconfigure(0, weight=1)
+                self.frame_definitions[x].grid_configure(row=x, column=0, padx=(5,5), pady=2, sticky="w")
+
         else:   
             self.select_state = True
             self.delete_def_butt.grid(row=0, column=2, pady=5, sticky="e")
             self.select_button.configure(text="Cancel")
             for x in self.def_num:
-                self.my_definitions[x].grid(row=x, column=0, padx=(5,0), sticky="news")    
-                self.button_definitions[x].grid_configure(row=x, padx=(5,0))
+                self.my_frame.grid_columnconfigure(0, weight=0)
+                self.frame_definitions[x].grid_configure(row=x, column=1, padx=(5,5), sticky="w")
+                self.my_definitions[x].grid(row=x, column=0,  padx=(5,0), sticky="e")   
+                self.button_definitions[x].grid_configure(row=x, padx=(5,5))
                 self.bg_button_names[x].grid_configure(row=x)
     # ? ======================================================================================                      
     # ? Adding definitions
@@ -249,38 +262,53 @@ class Create_Frame(customtkinter.CTkFrame):
         frame_name = "Frame"+def_num
         def_button_name = "Button"+def_num
         bg_button_name = "bg_button"+def_num
-        
+        label_name = "Label"+def_num
+        test_name = "test"+def_num
         # Lists for each of the definition item aspects
         # ===========================        
         self.my_definitions.append(def_name)
         self.frame_definitions.append(frame_name)
         self.button_definitions.append(def_button_name)
         self.bg_button_names.append(bg_button_name)
+        self.label_definitions.append(label_name)
+        self.test_add.append(test_name)
         
+        # self.test_add[self.butt_num] = customtkinter.CTkFrame(self.my_frame, height=40, width=2000, fg_color="#F9F9FA")
+        # self.test_add[self.butt_num].grid(row=0, column=0, sticky="w")
+        
+        # TODO: Move text from buttons to labels to fix alignment issues where text becomes centered when it's too long to all fit on button
         # Frame for definition buttons
         # ===========================
-        self.frame_definitions[self.butt_num] = customtkinter.CTkFrame(self.my_frame, corner_radius=0, fg_color="transparent")
-        self.frame_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=0, pady=0, sticky="news")
-        self.frame_definitions[self.butt_num].grid_columnconfigure(1, weight=1)
-        self.frame_definitions[self.butt_num].grid_columnconfigure(0, weight=0)
+        self.frame_definitions[self.butt_num] = customtkinter.CTkFrame(self.my_frame, height=40, width=2000, corner_radius=5, fg_color="transparent")
+        self.frame_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,5), pady=2, sticky="w")
+        self.frame_definitions[self.butt_num].grid_columnconfigure(0, weight=1)
         self.frame_definitions[self.butt_num].grid_rowconfigure(self.butt_num, weight=0)
-
-        # Checkbox to select definitions
-        # ===========================        
-        self.my_definitions[self.butt_num] = customtkinter.CTkCheckBox(master=self.frame_definitions[self.butt_num], width=1, height=1, border_width=4, text="")
         
+        
+
         # Background button to add left aligned accent
         # ===========================        
-        self.bg_button_names[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, width=1000, corner_radius=0,
+        self.bg_button_names[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, width=2000, corner_radius=2,
                                                                          fg_color="#2CC985", text="", state="disabled")
-        self.bg_button_names[self.butt_num].grid(row=self.butt_num, column=1, padx=0, pady=0, sticky="w")
         
-        # Button used to display and store the definition itself
+        self.bg_button_names[self.butt_num].grid(row=self.butt_num, column=0, padx=(0,5), pady=0, sticky="w")
+        # Checkbox to select definitions
         # ===========================        
-        self.button_definitions[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, corner_radius=0,
-                                                                         font=customtkinter.CTkFont(size=17), fg_color="#F9F9FA", text_color="gray10", text=str(self.butt_num), anchor="w", 
-                                                                         command= lambda widget=self.butt_num: self.textbox_init(widget))
-        self.button_definitions[self.butt_num].grid(row=self.butt_num, column=1, padx=(5,0), pady=2, sticky="news")
+        self.my_definitions[self.butt_num] = customtkinter.CTkCheckBox(master=self.my_frame, width=1, height=1, border_width=4, text="")
+        
+        self.label_definitions[self.butt_num] = customtkinter.CTkEntry(self.frame_definitions[self.butt_num], placeholder_text="CTkEntry")
+        self.label_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="news")
+        
+        
+        # self.label_definitions[self.butt_num] = customtkinter.CTkLabel(self.frame_definitions[self.butt_num], text_color="gray10", text="CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and fully customizable widgets. They are created and used like normal Tkinter widgets and can also be used in combination with normal Tkinter elements. The widgets and the window colors either adapt to the system appearance or the manually set mode ('light', 'dark'), and all CustomTkinter widgets and windows support HighDPI scaling (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all desktop platforms (Windows, macOS, Linux).", font=customtkinter.CTkFont(size=17), anchor="w")
+        # self.label_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="news")
+        # self.label_definitions[self.butt_num].bind("<Button-1>", lambda event, btn=self.label_definitions[self.butt_num]: self.print_btn_text(btn))
+        # Button used to display and store the definition itself
+        # ===========================        #F9F9FA
+        # self.button_definitions[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, width=2000, corner_radius=5,
+        #                                                                  font=customtkinter.CTkFont(size=17), fg_color="transparent", text="", text_color="gray10", 
+        #                                                                  command= lambda widget=self.butt_num: self.textbox_init(widget), anchor="w")
+        # self.button_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="w")
         
         # ! Allows program to keep track of the number of definitions present and also the proper name of the definitions
         # ! ===================================================
@@ -288,12 +316,22 @@ class Create_Frame(customtkinter.CTkFrame):
         self.definition_name.append(self.my_definitions[self.butt_num])
         self.butt_num += 1
         # ! ===================================================
+
     # ? ===================================
     # TODO: Implement other segmented button menus for other character aspects
     def seg_butt_test(self, value):
         print(value)
-    # TODO: ====================================    
+    # TODO: ====================================   
     
+     
+    def text_edit(self):
+        self.def_save_butt.configure(state="normal") # Enables save button to save definition
+        self.textbox.configure(state="normal")
+        # Disables other definition buttons so that they're not clicked while definition is being edited
+        # =================================
+        for x in self.def_num:
+                self.button_definitions[x].configure(state="disabled")
+        
     # TODO: Check for radio button selection to auto format text input to the desired type of definition
     # ? Takes textbox input and saves it to button text so that definition can be stored
     # ? =================================================
@@ -310,7 +348,10 @@ class Create_Frame(customtkinter.CTkFrame):
             formatted = "{" + formatted + "}"
         # ===========================
         # TODO: Fix text alignment when text is longer than button in window is
-        self.button_definitions[self.current_definition].configure(text=formatted, anchor="e") # Saves text to button
+        self.button_definitions[self.current_definition].configure(text=formatted, anchor="w") # Saves text to button
+        for x in self.def_num:
+            self.button_definitions[x].configure(state="normal")
+        self.textbox.configure(state="disabled")
     # ? =================================================
     # ? Enables the character definition textbox
     # ? ============================    
@@ -322,27 +363,30 @@ class Create_Frame(customtkinter.CTkFrame):
         self.textbox.configure(state="normal") # Makes textbox usable
         self.textbox.delete("0.0", "end") # Clears placeholder/previous text
         text = self.button_definitions[curr_butt].cget('text')
-        
+        self.def_edit_butt.configure(state="normal")
         # Removes formatting around definitions so that they are easy to edit and read
         # ==================================
         if "[" in text:
             text = text[1:]
-            text = text[:1]
+            text = text[:-1]
+
         elif "{" in text:
             text = text[1:]
-            text = text[:1]
+            text = text[:-1]
         elif "((" in text:
             text = text[2:]
-            text = text[:1]
+            text = text[:-1]
         # ==================================                      
         self.textbox.insert("0.0", text)
         self.current_definition = curr_butt # Keeps track of current definition
-        self.def_save_butt.configure(state="normal") # Enables save button to save definition
         # self.textbox.configure(state="disabled") # TODO: Add edit button so definitions aren't accidentally edited
+        self.textbox.configure(state="disabled") # Makes textbox usable
         if self.select_state == True: # Select button logic to keep it from being active or from toggling when it shouldn't
             self.my_definitions[curr_butt].select()
     # ? ============================    
-
+    # ! ====================================================================
+    # ! Shows main character creation screen after new character button is created and fits menu to screen properly
+    # ! ====================================================================
     def show_character_creation(self):
         self.initial_create_frame.grid_forget()
         self.creation_frame.grid(row=0, column=0, padx=20, pady=20)
@@ -354,6 +398,7 @@ class Create_Frame(customtkinter.CTkFrame):
         self.creation_frame.grid_rowconfigure(2, weight=0)
         self.creation_frame.grid_rowconfigure(3, weight=1)
         self.creation_frame.grid_rowconfigure(4, weight=1)
+    # ! ====================================================================
     # ? ============================================================
     # ? Progress bar tester/counter
     def progress_color_percentage(self):
