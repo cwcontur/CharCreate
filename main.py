@@ -121,8 +121,8 @@ class App(customtkinter.CTk):
 # ! Program startup
 # ! --------------------------------------
 customtkinter.set_appearance_mode("Light")      
-# customtkinter.set_default_color_theme("custom-theme.json")
-customtkinter.set_default_color_theme("purp-theme.json")
+customtkinter.set_default_color_theme("custom-theme.json")
+# customtkinter.set_default_color_theme("purp-theme.json")
 
 if __name__ == "__main__":
     app = App()

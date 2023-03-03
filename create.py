@@ -288,16 +288,17 @@ class Create_Frame(customtkinter.CTkFrame):
 
         # Background button to add left aligned accent
         # ===========================        
-        self.bg_button_names[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, width=2000, corner_radius=2,
-                                                                         fg_color="#2CC985", text="", state="disabled")
+        # self.bg_button_names[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, width=2000, corner_radius=2,
+        #                                                                  fg_color="#2CC985", text="", state="disabled")
         
-        self.bg_button_names[self.butt_num].grid(row=self.butt_num, column=0, padx=(0,5), pady=0, sticky="w")
+        # self.bg_button_names[self.butt_num].grid(row=self.butt_num, column=0, padx=(0,5), pady=0, sticky="w")
         # Checkbox to select definitions
         # ===========================        
-        self.my_definitions[self.butt_num] = customtkinter.CTkCheckBox(master=self.my_frame, width=1, height=1, border_width=4, text="")
-        
-        self.label_definitions[self.butt_num] = customtkinter.CTkEntry(self.frame_definitions[self.butt_num], placeholder_text="CTkEntry")
-        self.label_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="news")
+        self.my_definitions[self.butt_num] = customtkinter.CTkCheckBox(master=self.my_frame, width=1, height=1, border_width=4, state="disabled", text_color="gray10", text="CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and fully customizable widgets. They are created and used like normal Tkinter widgets and can also be used in combination with normal Tkinter elements. The widgets and the window colors either adapt to the system appearance or the manually set mode ('light', 'dark'), and all CustomTkinter widgets and windows support HighDPI scaling (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all desktop platforms (Windows, macOS, Linux).", font=customtkinter.CTkFont(size=17))
+        self.my_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="news")
+       
+        # self.label_definitions[self.butt_num] = customtkinter.CTkEntry(self.frame_definitions[self.butt_num], placeholder_text="CTkEntry")
+        # self.label_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="news")
         
         
         # self.label_definitions[self.butt_num] = customtkinter.CTkLabel(self.frame_definitions[self.butt_num], text_color="gray10", text="CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and fully customizable widgets. They are created and used like normal Tkinter widgets and can also be used in combination with normal Tkinter elements. The widgets and the window colors either adapt to the system appearance or the manually set mode ('light', 'dark'), and all CustomTkinter widgets and windows support HighDPI scaling (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all desktop platforms (Windows, macOS, Linux).", font=customtkinter.CTkFont(size=17), anchor="w")
@@ -306,9 +307,9 @@ class Create_Frame(customtkinter.CTkFrame):
         # Button used to display and store the definition itself
         # ===========================        #F9F9FA
         # self.button_definitions[self.butt_num] = customtkinter.CTkButton(master=self.frame_definitions[self.butt_num], height=40, width=2000, corner_radius=5,
-        #                                                                  font=customtkinter.CTkFont(size=17), fg_color="transparent", text="", text_color="gray10", 
-        #                                                                  command= lambda widget=self.butt_num: self.textbox_init(widget), anchor="w")
-        # self.button_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="w")
+        #                                                                  fg_color="transparent", text="CustomTkinter is a python UI-library based on Tkinter, which provides new, modern and fully customizable widgets. They are created and used like normal Tkinter widgets and can also be used in combination with normal Tkinter elements. The widgets and the window colors either adapt to the system appearance or the manually set mode ('light', 'dark'), and all CustomTkinter widgets and windows support HighDPI scaling (Windows, macOS). With CustomTkinter you'll get a consistent and modern look across all desktop platforms (Windows, macOS, Linux).", font=customtkinter.CTkFont(size=17), text_color="gray10", 
+        #                                                                  command= lambda widget=self.butt_num: self.textbox_init(widget), anchor="ne")
+        # self.button_definitions[self.butt_num].grid(row=self.butt_num, column=0, padx=(5,2), pady=0, sticky="e")
         
         # ! Allows program to keep track of the number of definitions present and also the proper name of the definitions
         # ! ===================================================
