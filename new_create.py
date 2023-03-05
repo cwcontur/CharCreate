@@ -8,6 +8,7 @@ import sv_ttk
 # import definitions    
 import new_create
 from ttkwidgets.frames import Balloon
+from tkinter import *
 class Create_Frame(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent, style="Card.TFrame",padding=15)
@@ -39,18 +40,52 @@ class Create_Frame(ttk.Frame):
         # self.creation_frame.rowconfigure((0,1,2), weight=0)
         # self.creation_frame.rowconfigure((3,4), weight=1)
         self.creation_frame.columnconfigure(0, weight=1)
-        self.creation_frame.columnconfigure(1, weight=0)
-        self.creation_frame.rowconfigure(0, weight=1)
-        # ! ====================================================
+        self.creation_frame.columnconfigure((1,2), weight=0)
+        self.creation_frame.rowconfigure(0, weight=0)
+
+        self.creation_frame.rowconfigure(1, weight=0)
+        self.creation_frame.rowconfigure(2, weight=1)
         
+        # ! ====================================================
+        # ===================================        
+        self.def_buttons = ttk.Frame(self.creation_frame)
+        self.def_buttons.grid(row=0, column=0, padx=0, pady=0, sticky="new")
+        
+        self.add_def = ttk.Button(self.def_buttons, text="Add Definition")
+        self.add_def.grid(row=0, column=0, padx=15, pady=(15,0), sticky="news")
+        
+        self.select_def = ttk.Button(self.def_buttons, text="Select")
+        self.select_def.grid(row=0, column=1, padx=(0,15), pady=(15,0), sticky="w")
+        
+        self.delete_def = ttk.Button(self.def_buttons, text="Delete", style="Accent.TButton")
+        # self.delete_def.grid(row=0, column=2, padx=(0,15), pady=(15,0), sticky="w")
+        
+        self.char_def_counter = ttk.Label(self.def_buttons, text="Character Count: 0 / 3200", anchor="w")
+        self.char_def_counter.grid(row=1, column=0, padx=15, pady=(15,0), sticky="w")
+        # ===================================
+        
+        # ===================================
         self.scrollbar = ttk.Scrollbar(self.creation_frame)
-        self.scrollbar.grid(row=0, column=1, padx=(0,15), pady=15, sticky="nse")
-        self.tree = ttk.Treeview(self.creation_frame, columns=1, height=11, selectmode="browse", show="headings", yscrollcommand=self.scrollbar.set)
+        self.scrollbar.grid(row=1, rowspan=2, column=1, padx=(0,15), pady=15, sticky="nse")
+        self.tree = ttk.Treeview(self.creation_frame, columns=1, selectmode="browse", show="headings", yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.tree.yview)
-        self.tree.grid(row=0, column=0, padx=(15,5), pady=15, sticky="nsew")
-        self.balloon = Balloon(self.scrollbar)
+        self.tree["columns"] = ("1")
+        self.tree.column("1", anchor = "nw")
+        self.tree.heading("1", text="Definition")
+        self.tree.grid(row=1, rowspan=2, column=0, padx=(15,5), pady=(5,15), sticky="nsew")
+        
+        # * Tree item insertion
+        # self.tree.insert("", 'end', text="L1", values=("Testiclesings"))
+        # ===================================
+       
+        self.text_frame = ttk.Frame(self.creation_frame, style="Card.TFrame")
+        self.text_frame.grid(row=0, rowspan=2, column=2, padx=15, pady=15, sticky="news")
+        
+        self.textbox = Text(self.text_frame, height=5, width=35, wrap="word", font=("Segoe UI",10),relief="flat")
+        self.textbox.grid(row=0, column=0, padx=7, pady=7, sticky="ne")
 
-
+        # TODO: Add definition types, save/edit/cancel buttons for text box
+        
                 # * Button to create a new definition
         # self.add_button = ttk.Button(self.creation_frame, text="Definition") 
         # self.add_button.grid(row=0, column=0, padx=10, pady=10, sticky="w")
