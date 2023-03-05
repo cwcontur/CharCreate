@@ -103,8 +103,8 @@ if __name__ == "__main__":
     
     app = tkinter.Tk()
     app.title("Character Creator")
-    app.geometry(f"{1200}x{650}")
-    app.minsize(800, 500)
+    app.geometry(f"{1200}x{635}")
+    app.minsize(1000, 635)
     sv_ttk.set_theme("light")
     
     App(app).pack(expand=True, fill="both")
