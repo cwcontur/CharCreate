@@ -52,7 +52,7 @@ class Create_Frame(ttk.Frame):
         self.def_buttons = ttk.Frame(self.creation_frame)
         self.def_buttons.grid(row=0, column=0, padx=0, pady=0, sticky="news")
         
-        self.add_def = ttk.Button(self.def_buttons, text="Add Definition")
+        self.add_def = ttk.Button(self.def_buttons, text="Add Definition", command=self.tree_testing)
         self.add_def.grid(row=0, column=0, padx=15, pady=(15,0), sticky="news")
         
         self.select_def = ttk.Button(self.def_buttons, text="Select")
@@ -75,11 +75,12 @@ class Create_Frame(ttk.Frame):
         self.tree.grid(row=1, rowspan=3, column=0, padx=(15,5), pady=(5,15), sticky="nsew")
         
         # * Tree item insertion
-        # self.tree.insert("", 'end', text="L1", values=("Testiclesings"))
+        self.tree.insert("", 'end', text="L1", values=("Testiclesings"))
+        self.tree.insert("", 'end', text="L2", values=("Testiclfdafdasfdasesings"))
         # ! ==========================================
         # ! ==========================================
         self.right_hand_frame = ttk.Frame(self.creation_frame)
-        self.right_hand_frame.grid(row=0, rowspan=4, column=2, padx=(0,15), pady=15, sticky="news")
+        self.right_hand_frame.grid(row=0, rowspan=4, column=2, sticky="news")
         # ! ==========================================
         # ! ==========================================
         self.text_frame = ttk.Frame(self.right_hand_frame, style="Card.TFrame")
@@ -103,7 +104,7 @@ class Create_Frame(ttk.Frame):
         # ! ==========================================
         self.var = tkinter.IntVar()
         
-        self.def_type_frame = ttk.Frame(self.right_hand_frame, style="Card.TFrame")
+        self.def_type_frame = ttk.LabelFrame(self.right_hand_frame, text="Definition Type", style="Card.TFrame")
         self.def_type_frame.grid(row=3, column=0, padx=(0,15), pady=(0,15), sticky="new")
         self.def_type_frame.grid_rowconfigure(0, weight=1)
         self.def_type_frame.grid_rowconfigure(1, weight=1)
@@ -111,17 +112,17 @@ class Create_Frame(ttk.Frame):
         self.def_type_frame.grid_rowconfigure(3, weight=1)
         self.def_type_frame.grid_columnconfigure(0, weight=1)
         
-        self.def_type_label = ttk.Label(self.def_type_frame, text="Definition Type", anchor="center")
-        self.def_type_label.grid(row=0, column=0, padx=10, pady=10, sticky="news")         
+        # self.def_type_label = ttk.Label(self.def_type_frame, text="Definition Type", anchor="center")
+        # self.def_type_label.grid(row=0, column=0, padx=10, pady=10, sticky="news")         
         
         self.Hardcoded_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Hardcoded — []", variable=self.var, value=0)
-        self.Hardcoded_rad.grid(row=1, column=0, padx=10, pady=10, sticky="news")  
+        self.Hardcoded_rad.grid(row=0, column=0, padx=10, pady=10, sticky="news")  
     
         self.Context_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Context — (())", variable=self.var, value=1)
-        self.Context_rad.grid(row=2, column=0, padx=10, pady=10, sticky="news")  
+        self.Context_rad.grid(row=1, column=0, padx=10, pady=10, sticky="news")  
         
         self.Variable_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Variable — {}", variable=self.var, value=2)
-        self.Variable_rad.grid(row=3, column=0, padx=10, pady=10, sticky="news")  
+        self.Variable_rad.grid(row=2, column=0, padx=10, pady=10, sticky="news")  
         # ! ==========================================
         # ! ==========================================
         
@@ -171,3 +172,8 @@ class Create_Frame(ttk.Frame):
         self.initial_create_frame.grid_forget()
         self.tabControl.pack(fill="both", expand=1)
     # ! ====================================================================      
+
+
+    def tree_testing(self):
+        print("idot")
+        temp = self.tree
