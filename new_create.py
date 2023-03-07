@@ -34,7 +34,7 @@ class Create_Frame(ttk.Frame):
 
         # ! Frame to display the 'Create' menu screen
         # ! ====================================================
-        self.creation_frame = ttk.Frame(self.tabControl, style="Card.TFrame") # grid() initializer is included in show_character_creation()
+        self.creation_frame = ttk.Frame(self.tabControl) # grid() initializer is included in show_character_creation()
         self.creation_frame.grid(row=0, column=0, padx=7, pady=7, sticky="news")
         # self.creation_frame.columnconfigure(0, weight=1)
         # self.creation_frame.columnconfigure((1,2), weight=0)

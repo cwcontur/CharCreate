@@ -106,6 +106,8 @@ if __name__ == "__main__":
     app.geometry(f"{1200}x{620}")
     app.minsize(1000, 620)
     sv_ttk.set_theme("light")
+    # app.tk.call("source", "azure.tcl")
+    # app.tk.call("set_theme", "light")
     
     App(app).pack(expand=True, fill="both")
     app.mainloop()

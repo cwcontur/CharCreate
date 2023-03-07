@@ -22,7 +22,7 @@ picture.save("flower_image_altered.jpg")
 # Process every pixel
 # for x in width:
 #    for y in height:
-#        current_color = picture.getpixel( (x,y) )
+#        current_color = picture.getpixel( (x,y) )  
 #        ####################################################################
 #        # Do your logic here and create a new (R,G,B) tuple called new_color
 #        ####################################################################
