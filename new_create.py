@@ -52,13 +52,13 @@ class Create_Frame(ttk.Frame):
         self.def_buttons = ttk.Frame(self.creation_frame)
         self.def_buttons.grid(row=0, column=0, padx=0, pady=0, sticky="news")
         
-        self.add_def = ttk.Button(self.def_buttons, text="Add Definition", command=self.tree_testing)
+        self.add_def = ttk.Button(self.def_buttons, text="Add Definition", style="Toggle.TButton", command=self.add_definition)
         self.add_def.grid(row=0, column=0, padx=15, pady=(15,0), sticky="news")
         
-        self.select_def = ttk.Button(self.def_buttons, text="Select")
+        self.select_def = ttk.Button(self.def_buttons, text="Select", style="Toggle.TButton", command=self.select_definition)
         self.select_def.grid(row=0, column=1, padx=(0,15), pady=(15,0), sticky="w")
         
-        self.delete_def = ttk.Button(self.def_buttons, text="Delete", style="Accent.TButton")
+        self.delete_def = ttk.Button(self.def_buttons, text="Delete", style="Accent.TButton", command=self.delete_definition)
         # self.delete_def.grid(row=0, column=2, padx=(0,15), pady=(15,0), sticky="w")
         
         self.char_def_counter = ttk.Label(self.def_buttons, text="Character Count: 0 / 3200", anchor="w")
@@ -75,8 +75,8 @@ class Create_Frame(ttk.Frame):
         self.tree.grid(row=1, rowspan=3, column=0, padx=(15,5), pady=(5,15), sticky="nsew")
         
         # * Tree item insertion
-        self.tree.insert("", 'end', text="L1", values=("Testiclesings"))
-        self.tree.insert("", 'end', text="L2", values=("Testiclfdafdasfdasesings"))
+        # self.tree.insert("", 'end', text="L1", values=("Testiclesings"))
+        # self.tree.insert("", 'end', text="L2", values=("Testiclfdafdasfdasesings"))
         # ! ==========================================
         # ! ==========================================
         self.right_hand_frame = ttk.Frame(self.creation_frame)
@@ -164,7 +164,10 @@ class Create_Frame(ttk.Frame):
             
         # self.stupid = ttk.Button(self.creation_frame, text="Dumbass Fucko")
         # self.stupid.grid(row=0, column=0, padx=7, pady=7, sticky="nsew")           
-            
+        self.deff_num = 0
+        self.my_definitions = []
+        # self.trVi_pos = []
+        self.select_active = False # Keeps track of whether or not select button is being used
     # ! ====================================================================
     # ! Shows main character creation screen after new character button is created and fits menu to screen properly
     # ! ====================================================================
@@ -172,8 +175,34 @@ class Create_Frame(ttk.Frame):
         self.initial_create_frame.grid_forget()
         self.tabControl.pack(fill="both", expand=1)
     # ! ====================================================================      
-
-
-    def tree_testing(self):
-        print("idot")
-        temp = self.tree
+    def add_definition(self):
+        def_num = str(self.deff_num)
+        def_name = "Def" + def_num
+        tree_view_pos = "Pos" + def_num
+        self.my_definitions.append(def_name)
+        
+        self.tree.insert("", 'end', text=self.my_definitions[self.deff_num], values=("Testiclesings"))
+        
+    
+    def select_definition(self):
+        if not self.select_active:
+            # Changes select button text and style along with treeview mode
+            self.delete_def.grid(row=0, column=2, padx=(0,15), pady=(15,0), sticky="w")
+            self.tree.configure(selectmode="extended")
+            self.select_def.configure(text="Cancel", style="Accent.TButton")
+            self.select_active = True
+        else:
+            # Deselects all treeview items when selection is cancelled
+            for item in self.tree.selection():
+                self.tree.selection_remove(item)
+                
+            # Resets select button text and style along with treeview mode
+            self.select_def.configure(text="Select", style="Toggle.TButton")
+            self.delete_def.grid_remove()
+            self.tree.configure(selectmode="browse")
+            self.select_active = False
+            
+    def delete_definition(self):
+        for item in self.tree.selection():
+            self.tree.delete(item)
+        

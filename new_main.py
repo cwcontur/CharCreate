@@ -94,8 +94,10 @@ class App(ttk.Frame):
         self.initial_create_frame.grid_forget()
         self.creation_frame.grid(row=0, column=1, padx=10, pady=10)    
         
-        
-        
+# ! Will be implemented to save data before window is closed just in case      
+def exit():
+    print("dummy function") # Functions before closing program after hitting close window button
+    quit() # Closes program  
         
 # ! Program startup
 # ! --------------------------------------
@@ -106,6 +108,7 @@ if __name__ == "__main__":
     app.geometry(f"{1200}x{620}")
     app.minsize(1000, 620)
     sv_ttk.set_theme("light")
+    app.protocol("WM_DELETE_WINDOW", exit) # ! Will be implemented to save data before window is closed just in case
     # app.tk.call("source", "azure.tcl")
     # app.tk.call("set_theme", "light")
     
