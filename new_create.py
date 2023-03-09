@@ -62,18 +62,19 @@ class Create_Frame(ttk.Frame):
         # self.delete_def.grid(row=0, column=2, padx=(0,15), pady=(15,0), sticky="w")
         
         self.char_def_counter = ttk.Label(self.def_buttons, text="Character Count: 0 / 3200", anchor="w")
-        self.char_def_counter.grid(row=1, column=0, padx=15, pady=(15,0), sticky="sw")
+        self.char_def_counter.grid(row=1, column=0, columnspan=2, padx=15, pady=(15,0), sticky="sw")
         # ! ====================================================
         # ! ==========================================
         self.scrollbar = ttk.Scrollbar(self.creation_frame)
         self.scrollbar.grid(row=1, rowspan=3, column=1, padx=(0,15), pady=15, sticky="nse")
+        
         self.tree = ttk.Treeview(self.creation_frame, columns=1, selectmode="browse", show="headings", yscrollcommand=self.scrollbar.set)
         self.scrollbar.config(command=self.tree.yview)
         self.tree["columns"] = ("1")
         self.tree.column("1", anchor = "nw")
-        self.tree.heading("1", text="Definition")
+        self.tree.heading("1", command=self.dumbass, text="Definition")
         self.tree.grid(row=1, rowspan=3, column=0, padx=(15,5), pady=(5,15), sticky="nsew")
-        
+        self.tree.bind('<ButtonRelease-1>', self.selectItem)
         # * Tree item insertion
         # self.tree.insert("", 'end', text="L1", values=("Testiclesings"))
         # self.tree.insert("", 'end', text="L2", values=("Testiclfdafdasfdasesings"))
@@ -102,7 +103,7 @@ class Create_Frame(ttk.Frame):
         self.grammar_box.configure(state="disabled")
         # ! ==========================================
         # ! ==========================================
-        self.var = tkinter.IntVar()
+        self.variable = tkinter.IntVar()
         
         self.def_type_frame = ttk.LabelFrame(self.right_hand_frame, text="Definition Type", style="Card.TFrame")
         self.def_type_frame.grid(row=3, column=0, padx=(0,15), pady=(0,15), sticky="new")
@@ -115,13 +116,13 @@ class Create_Frame(ttk.Frame):
         # self.def_type_label = ttk.Label(self.def_type_frame, text="Definition Type", anchor="center")
         # self.def_type_label.grid(row=0, column=0, padx=10, pady=10, sticky="news")         
         
-        self.Hardcoded_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Hardcoded — []", variable=self.var, value=0)
+        self.Hardcoded_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Hardcoded — []", variable=self.variable, value=0)
         self.Hardcoded_rad.grid(row=0, column=0, padx=10, pady=10, sticky="news")  
     
-        self.Context_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Context — (())", variable=self.var, value=1)
+        self.Context_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Context — (())", variable=self.variable, value=1)
         self.Context_rad.grid(row=1, column=0, padx=10, pady=10, sticky="news")  
         
-        self.Variable_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Variable — {}", variable=self.var, value=2)
+        self.Variable_rad = ttk.Radiobutton(master=self.def_type_frame,  text="Variable — {}", variable=self.variable, value=2)
         self.Variable_rad.grid(row=2, column=0, padx=10, pady=10, sticky="news")  
         # ! ==========================================
         # ! ==========================================
@@ -131,7 +132,7 @@ class Create_Frame(ttk.Frame):
         self.text_buttons_frame.columnconfigure((0,1,2), weight=1)
         
         
-        self.def_save = ttk.Button(self.text_buttons_frame, text="Save", state="disabled")
+        self.def_save = ttk.Button(self.text_buttons_frame, text="Save", state="normal", command=self.save_textbox)
         self.def_save.grid(row=0, column=0, padx=(7,0), pady=7, sticky="ew")
         
         self.def_edit = ttk.Button(self.text_buttons_frame, text="Edit", state="disabled")
@@ -163,7 +164,14 @@ class Create_Frame(ttk.Frame):
         # self.tabControl.columnconfigure(0, weight=1)        
             
         # self.stupid = ttk.Button(self.creation_frame, text="Dumbass Fucko")
-        # self.stupid.grid(row=0, column=0, padx=7, pady=7, sticky="nsew")           
+        # self.stupid.grid(row=0, column=0, padx=7, pady=7, sticky="nsew")      
+        
+        self.total_character_count = 0
+        self.current_def_length = 0
+        self.before_edit_def = ""
+        self.after_edit_def = ""
+        self.current_active_definition = ""
+        
         self.deff_num = 0
         self.my_definitions = []
         # self.trVi_pos = []
@@ -179,10 +187,13 @@ class Create_Frame(ttk.Frame):
         def_num = str(self.deff_num)
         def_name = "Def" + def_num
         tree_view_pos = "Pos" + def_num
+        placeholder = "Click here to edit this definition..."
+        placeholder = (placeholder.replace(" ", "\ ")) # ! .replace() needed because [values] expects a tuple, this fixes that problem
+        # List of treeview item names just in case
         self.my_definitions.append(def_name)
-        
-        self.tree.insert("", 'end', text=self.my_definitions[self.deff_num], values=("Testiclesings"))
-        
+        # Inserts new definition into treeview
+        self.tree.insert("", 'end', text=self.my_definitions[self.deff_num], values=placeholder)
+        self.deff_num += 1
     
     def select_definition(self):
         if not self.select_active:
@@ -205,4 +216,78 @@ class Create_Frame(ttk.Frame):
     def delete_definition(self):
         for item in self.tree.selection():
             self.tree.delete(item)
+    
+    # Demo function to test treeview column header as a button
+    def dumbass(self):
+        print("raviollloi")
+        # self.tree.configure(selectmode="none")
+       
+    # TODO: Treeview item is not updated without being selected again, so character counter increments when item is not reselected
+    # Reacts to treeview item being selected
+    def selectItem(self, event):
+        curItem = self.tree.focus()
+        self.current_active_definition = curItem
+        temp = self.tree.item(curItem)['values']
+        temp = str(temp)
+        temp = temp[2:]
+        temp = temp[:-2]
+        self.before_edit_def = temp
+        if "Click here to edit this definition..." in temp:
+            self.update()
+        elif self.after_edit_def == self.before_edit_def:
+            print(self.after_edit_def)
+            self.update()
+        else:
+            self.current_def_length = len(temp)
+            self.total_character_count += self.current_def_length
+            counted = "Character Count: " + str(self.total_character_count) + " / 3200"
+            self.char_def_counter.configure(text=counted)
+            self.update()
+        # Removes wrapper characters to make editing definitions easier
+        temp = str(temp).replace("((", "")
+        temp = str(temp).replace("))", "")
+        temp = str(temp).replace("[", "")
+        temp = str(temp).replace("]", "")
+        temp = str(temp).replace("{", "")
+        temp = str(temp).replace("}", "")
+
+        # Inserts treeview item text into textbox
+        self.textbox.configure(state="normal")
+        self.textbox.delete("0.0", "end")
+        self.textbox.insert("0.0", temp)
+        # self.textbox.configure(state="disabled")
         
+    def save_textbox(self):
+        box_text = str(self.textbox.get("0.0", "end"))
+        formatted = box_text.rstrip('\r\n') # Removes return inputs and newlines
+        temp_len = len(formatted)
+        # Adds formatting for definitions
+        # ===========================
+        if self.variable.get() == 0:
+            formatted = "[" + formatted + "]"
+            temp_len += 2
+        elif self.variable.get() == 1:
+            formatted = "((" + formatted + "))"
+            temp_len += 4
+        elif self.variable.get() == 2:
+            formatted = "{" + formatted + "}"
+            temp_len += 2
+        self.after_edit_def = formatted
+        if formatted == self.before_edit_def:
+            self.update() 
+            print(self.before_edit_def)
+        else:
+            self.current_def_length -= temp_len
+            if self.current_def_length < 0:
+                self.current_def_length *= -1
+            
+            self.total_character_count += self.current_def_length
+            self.current_def_length = 0
+            counted = "Character Count: " + str(self.total_character_count) + " / 3200"
+            self.char_def_counter.configure(text=counted)
+            self.update()
+        formatted = formatted.replace("{", "\{")
+        formatted = formatted.replace("}", "\}")
+        # ===========================
+        formatted = formatted.replace(" ", "\ ")
+        self.tree.item(self.current_active_definition, values=formatted)
